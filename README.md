@@ -1,5 +1,8 @@
 # contenir/contenir-seo-mezzio
 
+[![Continuous Integration](https://github.com/contenir/contenir-seo-mezzio/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/contenir/contenir-seo-mezzio/actions/workflows/continuous-integration.yml)
+[![codecov](https://codecov.io/gh/contenir/contenir-seo-mezzio/graph/badge.svg)](https://codecov.io/gh/contenir/contenir-seo-mezzio)
+
 The Mezzio adapter for [contenir/contenir-seo](https://github.com/contenir/contenir-seo). It serves a site's
 `/sitemap.xml` and `/robots.txt`, gives templates the head's `<title>`, share defaults, verification tags and JSON-LD,
 and hides staging and local copies from search engines.
