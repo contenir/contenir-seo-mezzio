@@ -15,7 +15,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 use function in_array;
 use function preg_match;
-use function substr;
 
 /**
  * The site's SEO for every request:
@@ -59,14 +58,15 @@ final readonly class SeoMiddleware implements MiddlewareInterface
             return null;
         }
 
-        $path = $request->getUri()->getPath();
+        $path  = $request->getUri()->getPath();
+        $match = [];
 
         return match (true) {
             SitemapResponses::SITEMAP_PATH === $path => $this->sitemap->sitemap($request),
             SitemapResponses::ROBOTS_PATH === $path => $this->sitemap->robots($request),
-            1 === preg_match('~^/sitemap-[1-9][0-9]{0,8}\.xml$~', $path) => $this->sitemap->page(
+            1 === preg_match('~^/sitemap-([1-9][0-9]{0,8})\.xml$~', $path, $match) => $this->sitemap->page(
                 $request,
-                (int) substr($path, offset: 9, length: -4),
+                (int) ($match[1] ?? ''),
             ),
             default => null,
         };
