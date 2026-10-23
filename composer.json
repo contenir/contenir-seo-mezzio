@@ -1,0 +1,96 @@
+{
+  "name": "contenir/contenir-seo-mezzio",
+  "description": "Mezzio adapter for contenir/contenir-seo: /sitemap.xml and /robots.txt from the site's settings, a head service and seo() view helper for titles, share defaults, verification and JSON-LD, and X-Robots-Tag on hidden copies.",
+  "type": "library",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "contenir",
+    "seo",
+    "sitemap",
+    "robots",
+    "mezzio",
+    "psr-15"
+  ],
+  "homepage": "https://contenir.com.au",
+  "support": {
+    "issues": "https://github.com/contenir/contenir-seo-mezzio/issues",
+    "source": "https://github.com/contenir/contenir-seo-mezzio"
+  },
+  "require": {
+    "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+    "contenir/contenir-seo": "^0.1",
+    "contenir/contenir-workflow-mezzio": "^2.1",
+    "mezzio/mezzio-router": "^3.17",
+    "psr/container": "^1.1 || ^2.0",
+    "psr/http-factory": "^1.0",
+    "psr/http-message": "^1.1 || ^2.0",
+    "psr/http-server-handler": "^1.0.2",
+    "psr/http-server-middleware": "^1.0.2"
+  },
+  "require-dev": {
+    "contenir/contenir-qa-tools": "0.1.x-dev",
+    "infection/infection": "^0.34.1",
+    "laminas/laminas-diactoros": "^3.3",
+    "laminas/laminas-servicemanager": "^3.22 || ^4.0",
+    "laminas/laminas-view": "^2.35",
+    "phpunit/phpunit": "^11.5.42"
+  },
+  "conflict": {
+    "contenir/contenir-sitemap-mezzio": "*"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/contenir/contenir-seo"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Contenir\\Seo\\Mezzio\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Contenir\\Seo\\Mezzio\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "check": [
+      "@cs-check",
+      "@static-analysis",
+      "@test",
+      "@test-integration",
+      "@mutation-test"
+    ],
+    "cs-check": [
+      "mago format --check",
+      "mago lint"
+    ],
+    "cs-fix": [
+      "mago format",
+      "mago lint --fix"
+    ],
+    "static-analysis": "mago analyze",
+    "test": "phpunit --colors=always --testsuite unit",
+    "test-integration": "phpunit --colors=always --testsuite integration",
+    "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+    "mutation-test": "infection"
+  },
+  "config": {
+    "platform": {
+      "php": "8.3.99"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "infection/extension-installer": true
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.1.x-dev"
+    },
+    "laminas": {
+      "config-provider": "Contenir\\Seo\\Mezzio\\ConfigProvider"
+    }
+  }
+}
