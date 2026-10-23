@@ -1,0 +1,74 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Contenir\Seo\Mezzio;
+
+use Contenir\Seo\Mezzio\Sitemap\SitemapResponses;
+use Contenir\Seo\SeoConfig;
+use Contenir\Seo\Visibility\Visibility;
+use Override;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+use function in_array;
+use function preg_match;
+use function substr;
+
+/**
+ * The site's SEO for every request:
+ *
+ * - records the request for SeoHead, which templates call;
+ * - answers GET and HEAD /sitemap.xml, /sitemap-N.xml and /robots.txt
+ *   (a disabled sitemap, or a page it does not have, goes on down the
+ *   pipeline to be not found), so no route is needed, whatever the router;
+ * - sends X-Robots-Tag: noindex, nofollow on every response of a copy of the
+ *   site that is hidden from search engines.
+ *
+ * Pipe it early, before routing and before anything that answers requests
+ * itself (such as a page cache), so a hidden copy's every response is marked.
+ *
+ * @api
+ */
+final readonly class SeoMiddleware implements MiddlewareInterface
+{
+    public const string HEADER = 'X-Robots-Tag';
+
+    public function __construct(
+        private SeoConfig $config,
+        private CurrentRequest $current,
+        private SitemapResponses $sitemap,
+    ) {}
+
+    #[Override]
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $this->current->set($request);
+        $response = $this->answer($request) ?? $handler->handle($request);
+
+        return $this->config->visibility->hides($this->config->site, $request->getUri()->getHost())
+            ? $response->withHeader(self::HEADER, Visibility::HIDDEN->value)
+            : $response;
+    }
+
+    private function answer(ServerRequestInterface $request): ?ResponseInterface
+    {
+        if (! in_array($request->getMethod(), ['GET', 'HEAD'], strict: true)) {
+            return null;
+        }
+
+        $path = $request->getUri()->getPath();
+
+        return match (true) {
+            SitemapResponses::SITEMAP_PATH === $path => $this->sitemap->sitemap($request),
+            SitemapResponses::ROBOTS_PATH === $path => $this->sitemap->robots($request),
+            1 === preg_match('~^/sitemap-[1-9][0-9]{0,8}\.xml$~', $path) => $this->sitemap->page(
+                $request,
+                (int) substr($path, offset: 9, length: -4),
+            ),
+            default => null,
+        };
+    }
+}
