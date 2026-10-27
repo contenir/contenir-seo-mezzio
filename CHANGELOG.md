@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-27
+
 ### Changed
 
 - A workflow navigation page marked `visible: false` is undiscoverable: it keeps its address, but the sitemap leaves
