@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Contenir\Seo\Mezzio;
 
 use Contenir\Seo\Mezzio\Sitemap\SitemapResponses;
+use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
+use Contenir\Seo\Robots\RobotsDirective;
 use Contenir\Seo\SeoConfig;
 use Contenir\Seo\Visibility\Visibility;
+use Laminas\Cache\Exception\ExceptionInterface as CacheException;
+use Mezzio\Router\Exception\RuntimeException as RouterException;
 use Override;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -24,7 +29,8 @@ use function preg_match;
  *   (a disabled sitemap, or a page it does not have, goes on down the
  *   pipeline to be not found), so no route is needed, whatever the router;
  * - sends X-Robots-Tag: noindex, nofollow on every response of a copy of the
- *   site that is hidden from search engines.
+ *   site that is hidden from search engines, and X-Robots-Tag: noindex,
+ *   follow on a page the workflow navigation marks undiscoverable.
  *
  * Pipe it early, before routing and before anything that answers requests
  * itself (such as a page cache), so a hidden copy's every response is marked.
@@ -39,6 +45,7 @@ final readonly class SeoMiddleware implements MiddlewareInterface
         private SeoConfig $config,
         private CurrentRequest $current,
         private SitemapResponses $sitemap,
+        private ?WorkflowNavigationPages $navigation = null,
     ) {}
 
     #[Override]
@@ -47,9 +54,9 @@ final readonly class SeoMiddleware implements MiddlewareInterface
         $this->current->set($request);
         $response = $this->answer($request) ?? $handler->handle($request);
 
-        return $this->config->visibility->hides($this->config->site, $request->getUri()->getHost())
-            ? $response->withHeader(self::HEADER, Visibility::HIDDEN->value)
-            : $response;
+        $robots = $this->robots($request);
+
+        return null === $robots ? $response : $response->withHeader(self::HEADER, $robots->value);
     }
 
     private function answer(ServerRequestInterface $request): ?ResponseInterface
@@ -70,5 +77,35 @@ final readonly class SeoMiddleware implements MiddlewareInterface
             ),
             default => null,
         };
+    }
+
+    /**
+     * What the response tells search engines, if anything: a hidden copy's every page stays out
+     * of search results and its links unfollowed; an undiscoverable page stays out of them alone.
+     */
+    private function robots(ServerRequestInterface $request): ?RobotsDirective
+    {
+        $uri = $request->getUri();
+
+        return match (true) {
+            $this->config->visibility->hides($this->config->site, $uri->getHost()) => Visibility::HIDDEN,
+            in_array($uri->getPath(), $this->undiscoverable(), strict: true) => RobotsDirective::NoindexFollow,
+            default => null,
+        };
+    }
+
+    /**
+     * The undiscoverable pages' addresses, or none where the workflow navigation cannot be read:
+     * the page then answers as it would without it, and the failure is the router's to report.
+     *
+     * @return list<string>
+     */
+    private function undiscoverable(): array
+    {
+        try {
+            return $this->navigation?->undiscoverable() ?? [];
+        } catch (CacheException|ContainerExceptionInterface|RouterException) {
+            return [];
+        }
     }
 }

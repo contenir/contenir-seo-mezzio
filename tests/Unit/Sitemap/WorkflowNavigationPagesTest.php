@@ -52,22 +52,40 @@ final class WorkflowNavigationPagesTest extends TestCase
     }
 
     #[Test]
-    public function everyRoutedPageIsListedHiddenFromTheMenuOrNot(): void
+    public function everyRoutedDiscoverablePageIsListedWithTheChildrenOfAnUndiscoverableOne(): void
     {
         $pages = self::pages(
             [
                 'not a page',
-                ['route' => 'page-1', 'visible' => false],
+                ['route' => 'page-1', 'visible' => false, 'pages' => [['route' => 'page-5']]],
                 ['route' => 'page-2', 'pages' => ['not a page', ['route' => 'page-3']]],
                 ['route' => 'folder', 'pages' => [['route' => 'page-4']]],
                 ['label' => 'no route'],
             ],
-            ['page-1' => [], 'page-2' => [], 'page-3' => [], 'page-4' => []],
+            ['page-1' => [], 'page-2' => [], 'page-3' => [], 'page-4' => [], 'page-5' => []],
         );
 
         static::assertSame(
-            ['/page-1', '/page-2', '/page-3', '/page-4'],
+            ['/page-5', '/page-2', '/page-3', '/page-4'],
             array_map(static fn(Page $page): string => $page->url, $pages),
         );
+    }
+
+    #[Test]
+    public function theUndiscoverablePagesAreGivenByAddress(): void
+    {
+        $navigation = new WorkflowNavigationPages(
+            new FixedStrategy(
+                [
+                    ['route' => 'about', 'visible' => false],
+                    ['route' => 'work', 'visible' => true, 'pages' => [['route' => 'convoy', 'visible' => false]]],
+                    ['route' => 'unrouted', 'visible' => false],
+                ],
+                ['about' => [], 'work' => [], 'convoy' => []],
+            ),
+            new RouteNameRouter(),
+        );
+
+        static::assertSame(['/about', '/convoy'], $navigation->undiscoverable());
     }
 }

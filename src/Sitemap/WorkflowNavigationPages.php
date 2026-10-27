@@ -14,16 +14,23 @@ use Mezzio\Router\RouterInterface;
 use Override;
 use Psr\Container\ContainerExceptionInterface;
 
+use function array_filter;
 use function array_key_exists;
+use function array_map;
+use function array_values;
 use function date_create_immutable;
 use function is_array;
 use function is_string;
 
 /**
  * Every page of the contenir-workflow-mezzio navigation that has a route of
- * its own, hidden from the menu or not, as sitemap pages, with each page's
- * lastmod. A page whose resource has no middleware (a folder) has no route,
- * and is left out; its children are not.
+ * its own and is discoverable, as sitemap pages, with each page's lastmod. A
+ * page whose resource has no middleware (a folder) has no route, and is left
+ * out; so is one marked `visible: false`, which keeps its address but is not
+ * advertised. The children of either are listed as their own.
+ *
+ * The undiscoverable pages' addresses are given too, for SeoMiddleware to keep
+ * them out of search results.
  *
  * @api
  */
@@ -55,15 +62,35 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
     #[Override]
     public function pages(): array
     {
-        return $this->collect($this->strategy->getNavigationConfig(), $this->strategy->getRouteConfig());
+        return array_values(array_map(
+            static fn(RoutedPage $routed): Page => $routed->page,
+            array_filter($this->routed(), static fn(RoutedPage $routed): bool => $routed->discoverable),
+        ));
     }
 
     /**
-     * @param array<array-key, mixed> $pages
-     * @param array<array-key, mixed> $routes
-     * @param list<Page>              $found
+     * The addresses of the routed pages marked `visible: false`.
      *
-     * @return list<Page>
+     * @return list<string>
+     *
+     * @throws CacheException When the workflow cache cannot be read or written.
+     * @throws ContainerExceptionInterface When a workflow cannot be created.
+     * @throws RouterException When a page's route needs parameters to generate its URL.
+     */
+    public function undiscoverable(): array
+    {
+        return array_values(array_map(
+            static fn(RoutedPage $routed): string => $routed->page->url,
+            array_filter($this->routed(), static fn(RoutedPage $routed): bool => ! $routed->discoverable),
+        ));
+    }
+
+    /**
+     * @param array<array-key, mixed>  $pages
+     * @param array<array-key, mixed>  $routes
+     * @param list<RoutedPage>  $found
+     *
+     * @return list<RoutedPage>
      *
      * @throws RouterException When a page's route needs parameters to generate its URL.
      *
@@ -78,7 +105,10 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
 
             $route = $page['route'] ?? null;
             if (is_string($route) && array_key_exists($route, $routes)) {
-                $found[] = new Page($this->router->generateUri($route), self::modified($page['lastmod'] ?? null));
+                $found[] = new RoutedPage(
+                    new Page($this->router->generateUri($route), self::modified($page['lastmod'] ?? null)),
+                    false !== ($page['visible'] ?? true),
+                );
             }
 
             $children = $page['pages'] ?? null;
@@ -88,5 +118,19 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
         }
 
         return $found;
+    }
+
+    /**
+     * Every routed page, with whether it is discoverable.
+     *
+     * @return list<RoutedPage>
+     *
+     * @throws CacheException
+     * @throws ContainerExceptionInterface
+     * @throws RouterException
+     */
+    private function routed(): array
+    {
+        return $this->collect($this->strategy->getNavigationConfig(), $this->strategy->getRouteConfig());
     }
 }
