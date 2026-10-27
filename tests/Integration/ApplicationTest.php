@@ -58,6 +58,20 @@ final class ApplicationTest extends TestCase
     }
 
     #[Test]
+    public function anUndiscoverablePageTellsSearchEnginesToLeaveItOut(): void
+    {
+        $container = $this->container();
+
+        static::assertSame(
+            ['noindex, follow', ''],
+            [
+                self::handle($container, 'https://www.example.test/thanks')->getHeaderLine('X-Robots-Tag'),
+                self::handle($container, 'https://www.example.test/about')->getHeaderLine('X-Robots-Tag'),
+            ],
+        );
+    }
+
+    #[Test]
     public function aSitemapSourceOfTheWrongTypeIsRefused(): void
     {
         $container = $this->container(['sitemap_sources' => ['not-a-source']]);
@@ -66,6 +80,19 @@ final class ApplicationTest extends TestCase
         $this->expectException(InvalidServiceException::class);
 
         $container->get(SitemapResponses::class);
+    }
+
+    #[Test]
+    public function noPageIsLeftOutOfSearchWhenTheSitemapSkipsTheNavigation(): void
+    {
+        static::assertSame(
+            '',
+            self::handle(
+                $this->container(['sitemap_navigation' => false]),
+                'https://www.example.test/thanks',
+            )
+                ->getHeaderLine('X-Robots-Tag'),
+        );
     }
 
     #[Test]
@@ -120,11 +147,12 @@ final class ApplicationTest extends TestCase
             ->getBody();
 
         static::assertSame(
-            [true, true, true],
+            [true, true, true, false],
             [
                 str_contains($body, '<loc>https://www.example.test/home</loc>'),
                 str_contains($body, '<loc>https://www.example.test/about</loc>'),
                 str_contains($body, '<loc>https://www.example.test/work/convoy</loc>'),
+                str_contains($body, '/thanks</loc>'),
             ],
         );
     }
@@ -158,8 +186,8 @@ final class ApplicationTest extends TestCase
             'contenir_seo'     => ['extensions_config' => $this->directory, ...$options],
         ]);
         $container->setService(ResourceStrategy::class, new FixedStrategy(
-            [['route' => 'home', 'visible' => false], ['route' => 'about']],
-            ['home' => [], 'about' => []],
+            [['route' => 'home'], ['route' => 'about'], ['route' => 'thanks', 'visible' => false]],
+            ['home' => [], 'about' => [], 'thanks' => []],
         ));
         $container->setService(RouterInterface::class, new RouteNameRouter());
         $container->setService(FixedPages::class, new FixedPages([new Page('/work/convoy')]));

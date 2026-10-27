@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- A workflow navigation page marked `visible: false` is undiscoverable: it keeps its address, but the sitemap leaves
+  it out (its children stay in), and `SeoMiddleware` answers it with `X-Robots-Tag: noindex, follow`.
+  contenir/contenir-resource-mezzio marks a resource so when its `visible` column is off, which the CMS labels
+  Discoverable. A site that keeps the navigation out of its sitemap (`contenir_seo.sitemap_navigation: false`)
+  marks no page so.
+
 ## [0.1.0] - 2026-10-23
 
 ### Added

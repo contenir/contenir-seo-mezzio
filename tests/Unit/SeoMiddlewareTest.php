@@ -7,13 +7,18 @@ namespace Contenir\Seo\Mezzio\Tests\Unit;
 use Contenir\Seo\Mezzio\CurrentRequest;
 use Contenir\Seo\Mezzio\SeoMiddleware;
 use Contenir\Seo\Mezzio\Sitemap\SitemapResponses;
+use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedPages;
+use Contenir\Seo\Mezzio\Tests\TestAsset\FixedStrategy;
+use Contenir\Seo\Mezzio\Tests\TestAsset\RouteNameRouter;
 use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
+use Contenir\Seo\Mezzio\Tests\TestAsset\UnroutableRouter;
 use Contenir\Seo\SeoConfig;
 use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\StreamFactory;
+use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -74,6 +79,30 @@ final class SeoMiddlewareTest extends TestCase
     }
 
     #[Test]
+    public function anUndiscoverablePageIsLeftOutOfSearchResults(): void
+    {
+        static::assertSame(
+            ['noindex, follow', ''],
+            [
+                $this->navigated(new RouteNameRouter(), 'https://www.example.test/thanks')->getHeaderLine(
+                    'X-Robots-Tag',
+                ),
+                $this->navigated(new RouteNameRouter(), 'https://www.example.test/about')->getHeaderLine(
+                    'X-Robots-Tag',
+                ),
+            ],
+        );
+    }
+
+    #[Test]
+    public function aPageAnswersAsItWouldWhenTheNavigationCannotBeAddressed(): void
+    {
+        $response = $this->navigated(new UnroutableRouter(), 'https://www.example.test/thanks');
+
+        static::assertSame(['page', ''], [(string) $response->getBody(), $response->getHeaderLine('X-Robots-Tag')]);
+    }
+
+    #[Test]
     public function itAnswersANumberedSitemapPageWithThatPage(): void
     {
         static::assertStringContainsString(
@@ -119,6 +148,29 @@ final class SeoMiddlewareTest extends TestCase
     protected function setUp(): void
     {
         $this->current = new CurrentRequest();
+    }
+
+    private function navigated(RouterInterface $router, string $url): ResponseInterface
+    {
+        $config  = SeoSettings::config();
+        $handler = $this->createStub(RequestHandlerInterface::class);
+        $handler->method('handle')->willReturn(new TextResponse('page'));
+
+        return (new SeoMiddleware(
+            $config,
+            $this->current,
+            new SitemapResponses($config, new ResponseFactory(), new StreamFactory(), [], 2),
+            new WorkflowNavigationPages(
+                new FixedStrategy([['route' => 'about'], ['route' => 'thanks', 'visible' => false]], [
+                    'about'  => [],
+                    'thanks' => [],
+                ]),
+                $router,
+            ),
+        ))->process(new ServerRequest(
+            uri: $url,
+            method: 'GET',
+        ), $handler);
     }
 
     private function process(string $method, string $url, ?SeoConfig $config = null): ResponseInterface
