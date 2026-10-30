@@ -6,6 +6,21 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-30
+
+### Added
+
+- The `jsonLd()` view helper: the request's `Graph` (contenir/contenir-seo's), which `seo()->render()`, other
+  packages and the page's template append structured data to, and the layout writes once with `script($nonce)`.
+- `seo()->render()` and `build()` take an `article`, contenir-seo's `Article`, for the page's Article JSON-LD; every
+  page but the home page gets a BreadcrumbList from its path.
+
+### Changed
+
+- `render()` no longer writes the JSON-LD script, and no longer takes a `nonce`: it adds the nodes to the `Graph`, and
+  the layout writes them with `$this->jsonLd()->script($nonce)`.
+- contenir/contenir-seo `^0.3` is required.
+
 ## [0.2.0] - 2026-10-27
 
 ### Changed

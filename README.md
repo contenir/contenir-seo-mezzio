@@ -56,18 +56,28 @@ header, which a client can spoof: set the site URL on every live site.
 
 ## The head
 
-`SeoHead`, which the `seo()` view helper returns, builds the site's part of a page's `<head>`:
+`SeoHead`, which the `seo()` view helper returns, builds the site's part of a page's `<head>`, and the `jsonLd()`
+helper gathers the page's structured data, as `headMeta()` gathers its tags:
 
 ```php
+<?php
+use Contenir\Resource\Core\Metadata\PageMetadata;
+use Contenir\Seo\Head\Article;
+
+$article = PageMetadata::ARTICLE === $page?->type && null !== $page->title
+    ? new Article($page->url, $page->title, $page->description, $page->image, $page->published, $page->updated)
+    : null;
+?>
 <head>
     <meta charset="utf-8">
     <?= $this->seo()->render(
         title: $page?->title,
         hasDescription: null !== $page?->description,
         hasImage: null !== $page?->image,
-        nonce: $nonce,
+        article: $article,
     ) ?>
     <?= $pageTags /* the page's own description, canonical, Open Graph and Twitter tags */ ?>
+    <?= $this->jsonLd()->script($nonce) ?>
 ```
 
 `render()` returns, escaped:
@@ -76,8 +86,12 @@ header, which a client can spoof: set the site URL on every live site.
 - `og:site_name`, a robots meta tag when the page shouldn't be indexed, and on the home page the verification tags for
   Google, Bing, Pinterest and Meta;
 - the site's default description, and its default share image with its alt text and size, for a page that has none of
-  its own (say so with `hasDescription` and `hasImage`);
-- on the home page, the JSON-LD Organization and WebSite, as a script element with `nonce` when given.
+  its own (say so with `hasDescription` and `hasImage`).
+
+It adds the page's JSON-LD to `jsonLd()`'s graph: on the home page, the Organization and WebSite; elsewhere, an
+Article for a page that is one (pass `article`) and the BreadcrumbList from the page's path. A template appends its
+own nodes the same way, `$this->jsonLd()->append([...])`, and the layout writes them all once, in one script element
+with `$nonce` when given. Write it after `render()` and anything else that appends.
 
 `build()` returns the same as contenir-seo's `Head`, for a template that writes its own markup. With
 [contenir-resource-mezzio](https://github.com/contenir/contenir-resource-mezzio), the page's own tags come from
@@ -87,8 +101,9 @@ header, which a client can spoof: set the site URL on every live site.
 The home page is the page at a home path, `/` unless `contenir_seo.home_paths` says otherwise. Template engines other
 than laminas-view take `Contenir\Seo\Mezzio\SeoHead` from the container.
 
-The head is per request, but the container's services are shared: the request is held by `CurrentRequest`, so the
-container must serve one request, as under PHP-FPM, not a long-running server.
+The head is per request, but the container's services are shared: the request is held by `CurrentRequest`, and the
+structured data by the `Graph` service, so the container must serve one request, as under PHP-FPM, not a
+long-running server.
 
 ## The sitemap
 

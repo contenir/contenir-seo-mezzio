@@ -31,6 +31,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use stdClass;
 
+use function array_column;
 use function array_merge_recursive;
 use function str_contains;
 
@@ -101,7 +102,10 @@ final class ApplicationTest extends TestCase
         $container = $this->container();
         self::handle($container, 'https://www.example.test/');
 
-        static::assertNotNull($container->get(SeoHead::class)->build('Home')->jsonLd);
+        static::assertSame(
+            ['Organization', 'WebSite'],
+            array_column($container->get(SeoHead::class)->build('Home')->jsonLd, '@type'),
+        );
     }
 
     #[Test]
@@ -133,7 +137,10 @@ final class ApplicationTest extends TestCase
 
         static::assertSame(
             [true, true],
-            [str_contains($html, '<title>Home | Example</title>'), str_contains($html, 'application/ld+json')],
+            [
+                str_contains($html, '<title>Home | Example</title>'),
+                str_contains($renderer->plugin('jsonLd')()->script(), '"@type":"WebSite"'),
+            ],
         );
     }
 
