@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-30
+
 ### Added
 
 - The `jsonLd()` view helper: the request's `Graph` (contenir/contenir-seo's), which `seo()->render()`, other
