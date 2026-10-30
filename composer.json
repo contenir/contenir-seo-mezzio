@@ -18,7 +18,7 @@
   },
   "require": {
     "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
-    "contenir/contenir-seo": "^0.1 || ^0.2",
+    "contenir/contenir-seo": "^0.3",
     "contenir/contenir-workflow-mezzio": "^2.1",
     "mezzio/mezzio-router": "^3.17",
     "psr/container": "^1.1 || ^2.0",

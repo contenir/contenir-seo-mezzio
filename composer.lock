@@ -4,23 +4,78 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b3df6152ba859d776823b443443f2ba",
+    "content-hash": "afae4e7f5600a46e0140a5f5adde244f",
     "packages": [
         {
-            "name": "contenir/contenir-seo",
-            "version": "v0.1.0",
+            "name": "contenir/contenir-contact",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/contenir/contenir-seo.git",
-                "reference": "17cdeb0c076ae71a2692a5a58e89712410403a54"
+                "url": "https://github.com/contenir/contenir-contact.git",
+                "reference": "1a0999fa0dd1b222ce1b31d1c369695f59327000"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/17cdeb0c076ae71a2692a5a58e89712410403a54",
-                "reference": "17cdeb0c076ae71a2692a5a58e89712410403a54",
+                "url": "https://api.github.com/repos/contenir/contenir-contact/zipball/1a0999fa0dd1b222ce1b31d1c369695f59327000",
+                "reference": "1a0999fa0dd1b222ce1b31d1c369695f59327000",
                 "shasum": ""
             },
             "require": {
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Contact\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Framework-free contact details for Contenir: the business and its offices, with addresses, telephones, opening hours, geolocation and business types, overrides per office, and formats for showing them.",
+            "homepage": "https://contenir.com.au",
+            "keywords": [
+                "address",
+                "business",
+                "contact",
+                "contenir",
+                "office",
+                "opening-hours",
+                "schema.org"
+            ],
+            "support": {
+                "issues": "https://github.com/contenir/contenir-contact/issues",
+                "source": "https://github.com/contenir/contenir-contact"
+            },
+            "time": "2026-10-30T00:47:28+00:00"
+        },
+        {
+            "name": "contenir/contenir-seo",
+            "version": "v0.3.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:contenir/contenir-seo.git",
+                "reference": "f21aee1bde994f204509f032e37d324007413686"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/f21aee1bde994f204509f032e37d324007413686",
+                "reference": "f21aee1bde994f204509f032e37d324007413686",
+                "shasum": ""
+            },
+            "require": {
+                "contenir/contenir-contact": "^0.1",
                 "ext-xmlwriter": "*",
                 "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
             },
@@ -94,7 +149,7 @@
                 "issues": "https://github.com/contenir/contenir-seo/issues",
                 "source": "https://github.com/contenir/contenir-seo"
             },
-            "time": "2026-10-21T00:40:21+00:00"
+            "time": "2026-10-30T02:28:18+00:00"
         },
         {
             "name": "contenir/contenir-workflow-mezzio",

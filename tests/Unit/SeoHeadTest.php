@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio\Tests\Unit;
 
+use Contenir\Seo\Head\Article;
+use Contenir\Seo\JsonLd\Graph;
 use Contenir\Seo\Mezzio\CurrentRequest;
 use Contenir\Seo\Mezzio\SeoHead;
 use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
+use Contenir\Seo\Mezzio\View\JsonLdHelper;
 use Contenir\Seo\Mezzio\View\SeoHelper;
 use Contenir\Seo\SeoConfig;
 use Laminas\Diactoros\ServerRequest;
@@ -14,6 +17,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+use function array_column;
 use function array_map;
 use function in_array;
 use function str_contains;
@@ -52,6 +56,18 @@ final class SeoHeadTest extends TestCase
     }
 
     #[Test]
+    public function anArticleIsDescribedAlongsideItsTrail(): void
+    {
+        $head = self::head('https://www.example.test/work/a-project')
+            ->build(
+                'A project',
+                article: new Article('https://www.example.test/work/a-project', 'A project'),
+            );
+
+        static::assertSame(['Article', 'BreadcrumbList'], array_column($head->jsonLd, '@type'));
+    }
+
+    #[Test]
     public function aPageTitleFollowsTheSitesTemplate(): void
     {
         static::assertSame('About | Example', self::head('https://www.example.test/about')->build('About')->title);
@@ -81,11 +97,11 @@ final class SeoHeadTest extends TestCase
     }
 
     #[Test]
-    public function theHomePageGetsTheSitesJsonLd(): void
+    public function theHomePageGetsTheSitesJsonLdAndAnotherPageItsTrail(): void
     {
-        static::assertSame([true, false], [
-            null !== self::head('https://www.example.test/')->build('Home')->jsonLd,
-            null !== self::head('https://www.example.test/about')->build('About')->jsonLd,
+        static::assertSame([['Organization', 'WebSite'], ['BreadcrumbList']], [
+            array_column(self::head('https://www.example.test/')->build('Home')->jsonLd, '@type'),
+            array_column(self::head('https://www.example.test/about')->build('About')->jsonLd, '@type'),
         ]);
     }
 
@@ -95,25 +111,44 @@ final class SeoHeadTest extends TestCase
         $current = new CurrentRequest();
         $current->set(new ServerRequest(uri: 'https://www.example.test/'));
 
-        static::assertNotNull((new SeoHead(SeoSettings::config(), $current))->build('Home')->jsonLd);
+        static::assertNotSame([], (new SeoHead(SeoSettings::config(), $current))->build('Home')->jsonLd);
     }
 
     #[Test]
     public function theHomePathsCanBeConfigured(): void
     {
-        static::assertNotNull(self::head('https://www.example.test/en', homePaths: ['/en'])->build('Home')->jsonLd);
+        static::assertSame(
+            ['Organization', 'WebSite'],
+            array_column(self::head('https://www.example.test/en', homePaths: ['/en'])->build('Home')->jsonLd, '@type'),
+        );
     }
 
     #[Test]
-    public function theMarkupHoldsTheTitleTagsAndJsonLdWithTheNonce(): void
+    public function theJsonLdHelperGivesTheGraph(): void
     {
-        $html = self::head('https://www.example.test/')->render('Home', nonce: 'abc');
+        $graph = new Graph();
+
+        static::assertSame($graph, (new JsonLdHelper($graph))());
+    }
+
+    #[Test]
+    public function theMarkupHoldsTheTitleAndTagsAndTheGraphTheJsonLd(): void
+    {
+        $graph = new Graph();
+        $graph->append(['@type' => 'CreativeWork']);
+        $current = new CurrentRequest();
+        $current->set(new ServerRequest(uri: 'https://www.example.test/'));
+        $head = new SeoHead(SeoSettings::config(), $current, graph: $graph);
+
+        $html = $head->render('Home');
 
         static::assertSame(
-            [true, true],
+            [true, false, $graph, ['CreativeWork', 'Organization', 'WebSite']],
             [
                 str_contains($html, '<title>Home | Example</title>'),
-                str_contains($html, '<script type="application/ld+json" nonce="abc">'),
+                str_contains($html, 'application/ld+json'),
+                $head->graph(),
+                array_column($graph->nodes(), '@type'),
             ],
         );
     }
@@ -150,6 +185,6 @@ final class SeoHeadTest extends TestCase
     {
         $head = new SeoHead(SeoSettings::config(), new CurrentRequest());
 
-        static::assertSame(['Home | Example', null], [$head->build('Home')->title, $head->build('Home')->jsonLd]);
+        static::assertSame(['Home | Example', []], [$head->build('Home')->title, $head->build('Home')->jsonLd]);
     }
 }

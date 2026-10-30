@@ -6,6 +6,7 @@ namespace Contenir\Seo\Mezzio\Tests\Unit;
 
 use Contenir\Seo\Mezzio\ConfigProvider;
 use Contenir\Seo\Mezzio\SeoMiddleware;
+use Contenir\Seo\Mezzio\View\JsonLdHelper;
 use Contenir\Seo\Mezzio\View\SeoHelper;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -17,18 +18,19 @@ use function array_key_exists;
 final class ConfigProviderTest extends TestCase
 {
     #[Test]
-    public function itRegistersTheServicesAndTheSeoHelper(): void
+    public function itRegistersTheServicesAndTheSeoAndJsonLdHelpers(): void
     {
         $provider = new ConfigProvider();
         $config   = $provider();
 
         static::assertSame(
-            [$provider->getDependencies(), $provider->getViewHelpers(), true, SeoHelper::class],
+            [$provider->getDependencies(), $provider->getViewHelpers(), true, SeoHelper::class, JsonLdHelper::class],
             [
                 $config['dependencies'],
                 $config['view_helpers'],
                 array_key_exists(SeoMiddleware::class, $config['dependencies']['factories']),
                 $config['view_helpers']['aliases']['seo'],
+                $config['view_helpers']['aliases']['jsonLd'],
             ],
         );
     }
