@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio\Tests\Unit\Sitemap;
 
+use Contenir\Resource\Core\Metadata\PageMetadataBuilder;
+use Contenir\Resource\Core\ResourceManagerInterface;
+use Contenir\Seo\Mezzio\Sitemap\PageImages;
 use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedStrategy;
+use Contenir\Seo\Mezzio\Tests\TestAsset\ImagedProject;
 use Contenir\Seo\Mezzio\Tests\TestAsset\RouteNameRouter;
 use Contenir\Seo\Sitemap\Page;
 use DateTimeImmutable;
@@ -48,6 +52,28 @@ final class WorkflowNavigationPagesTest extends TestCase
         static::assertSame(
             ['2024-01-30T14:09:33+00:00', '2024-01-30T14:09:33+00:00', null, null, null],
             array_map(static fn(Page $page): ?string => $page->modified?->format(DATE_ATOM), $pages),
+        );
+    }
+
+    #[Test]
+    public function eachListedPageCarriesItsRecordsShareImage(): void
+    {
+        $project        = new ImagedProject();
+        $project->image = '/asset/house.jpg';
+        $resources      = $this->createStub(ResourceManagerInterface::class);
+        $resources->method('findActive')->willReturn($project);
+        $navigation = new WorkflowNavigationPages(
+            new FixedStrategy([['route' => 'house'], ['route' => 'hidden', 'visible' => false]], [
+                'house'  => ['options' => ['defaults' => ['id' => ['resourceId' => 4]]]],
+                'hidden' => ['options' => ['defaults' => ['id' => ['resourceId' => 5]]]],
+            ]),
+            new RouteNameRouter(),
+            new PageImages($resources, new PageMetadataBuilder(), 'https://www.example.test'),
+        );
+
+        static::assertSame(
+            [['/house', ['https://www.example.test/asset/house.jpg']]],
+            array_map(static fn(Page $page): array => [$page->url, $page->images], $navigation->pages()),
         );
     }
 

@@ -153,12 +153,15 @@ return [
         'public_path'        => 'public',          // the document root, to measure the default share image
         'home_paths'         => ['/'],             // the home page's paths
         'sitemap_navigation' => true,              // list the workflow navigation's pages
+        'sitemap_images'     => true,              // list each page's share image, as its head gives it
         'sitemap_sources'    => [],                // services adding pages to the sitemap
     ],
 ];
 ```
 
 The workflow navigation comes from the strategy `workflow_manager.strategy` names, as contenir-workflow-mezzio reads it.
+Where the site has contenir-resource's `ResourceManagerInterface`, each page lists its record's share image: the one
+`PageMetadataBuilder` gives the page's head, so the sitemap and the page never disagree.
 
 ## Differences from the laminas-mvc adapter
 

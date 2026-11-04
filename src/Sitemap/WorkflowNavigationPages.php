@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio\Sitemap;
 
+use Contenir\Db\Model\Exception\ExceptionInterface as DbModelException;
 use Contenir\Seo\Mezzio\SitemapSourceInterface;
 use Contenir\Seo\Sitemap\Page;
 use Contenir\Workflow\Strategy\ResourceStrategyInterface;
@@ -27,7 +28,8 @@ use function is_string;
  * its own and is discoverable, as sitemap pages, with each page's lastmod. A
  * page whose resource has no middleware (a folder) has no route, and is left
  * out; so is one marked `visible: false`, which keeps its address but is not
- * advertised. The children of either are listed as their own.
+ * advertised. The children of either are listed as their own. Given the
+ * site's PageImages, each page lists its record's share image.
  *
  * The undiscoverable pages' addresses are given too, for SeoMiddleware to keep
  * them out of search results.
@@ -39,6 +41,7 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
     public function __construct(
         private ResourceStrategyInterface $strategy,
         private RouterInterface $router,
+        private ?PageImages $images = null,
     ) {}
 
     private static function modified(mixed $value): ?DateTimeInterface
@@ -78,12 +81,14 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
      * @throws CacheException When the workflow cache cannot be read or written.
      * @throws ContainerExceptionInterface When a workflow cannot be created.
      * @throws RouterException When a page's route needs parameters to generate its URL.
+     * @throws DbModelException When a page's record cannot be read.
      */
     #[Override]
     public function pages(): array
     {
         return array_values(array_map(
-            static fn(RoutedPage $routed): Page => $routed->page,
+            /** @throws DbModelException */
+            fn(RoutedPage $routed): Page => $routed->listed($this->images),
             array_filter($this->routed(), static fn(RoutedPage $routed): bool => $routed->discoverable),
         ));
     }
@@ -129,6 +134,7 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
                     new Page($this->router->generateUri($route), self::modified($page['lastmod'] ?? null)),
                     false !== ($page['visible'] ?? true),
                     RoutedPage::label($page['label'] ?? null),
+                    $routes[$route],
                 );
             }
 
