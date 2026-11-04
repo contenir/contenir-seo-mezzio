@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio;
 
+use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
 use Contenir\Seo\JsonLd\Graph;
 use Contenir\Seo\Mezzio\Factory\JsonLdHelperFactory;
+use Contenir\Seo\Mezzio\Factory\SectionPageDefaultsFactory;
 use Contenir\Seo\Mezzio\Factory\SeoConfigFactory;
 use Contenir\Seo\Mezzio\Factory\SeoHeadFactory;
 use Contenir\Seo\Mezzio\Factory\SeoHelperFactory;
@@ -37,6 +39,7 @@ final class ConfigProvider
         return [
             'invokables' => [CurrentRequest::class => CurrentRequest::class, Graph::class => Graph::class],
             'factories'  => [
+                PageDefaultsInterface::class   => SectionPageDefaultsFactory::class,
                 SeoConfig::class               => SeoConfigFactory::class,
                 SeoHead::class                 => SeoHeadFactory::class,
                 SeoMiddleware::class           => SeoMiddlewareFactory::class,
