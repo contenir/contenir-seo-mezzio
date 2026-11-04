@@ -19,6 +19,8 @@
   "require": {
     "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
     "contenir/contenir-db-model": "^2.0.0-rc6",
+    "contenir/contenir-preview": "^0.3",
+    "contenir/contenir-preview-mezzio": "^0.1",
     "contenir/contenir-resource": "^2.0.0-RC6",
     "contenir/contenir-seo": "^0.6",
     "contenir/contenir-workflow-mezzio": "^2.1",

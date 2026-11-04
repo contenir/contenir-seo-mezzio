@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Contenir\Seo\Mezzio\Tests\Unit;
 
 use Contenir\Seo\Mezzio\ConfigProvider;
+use Contenir\Seo\Mezzio\Factory\InspectMiddlewareFactory;
+use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
 use Contenir\Seo\Mezzio\SeoMiddleware;
 use Contenir\Seo\Mezzio\View\JsonLdHelper;
 use Contenir\Seo\Mezzio\View\SeoHelper;
@@ -24,11 +26,19 @@ final class ConfigProviderTest extends TestCase
         $config   = $provider();
 
         static::assertSame(
-            [$provider->getDependencies(), $provider->getViewHelpers(), true, SeoHelper::class, JsonLdHelper::class],
+            [
+                $provider->getDependencies(),
+                $provider->getViewHelpers(),
+                true,
+                InspectMiddlewareFactory::class,
+                SeoHelper::class,
+                JsonLdHelper::class,
+            ],
             [
                 $config['dependencies'],
                 $config['view_helpers'],
                 array_key_exists(SeoMiddleware::class, $config['dependencies']['factories']),
+                $config['dependencies']['factories'][InspectMiddleware::class] ?? null,
                 $config['view_helpers']['aliases']['seo'],
                 $config['view_helpers']['aliases']['jsonLd'],
             ],

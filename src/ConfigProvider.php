@@ -6,6 +6,7 @@ namespace Contenir\Seo\Mezzio;
 
 use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
 use Contenir\Seo\JsonLd\Graph;
+use Contenir\Seo\Mezzio\Factory\InspectMiddlewareFactory;
 use Contenir\Seo\Mezzio\Factory\JsonLdHelperFactory;
 use Contenir\Seo\Mezzio\Factory\SectionPageDefaultsFactory;
 use Contenir\Seo\Mezzio\Factory\SeoConfigFactory;
@@ -14,6 +15,7 @@ use Contenir\Seo\Mezzio\Factory\SeoHelperFactory;
 use Contenir\Seo\Mezzio\Factory\SeoMiddlewareFactory;
 use Contenir\Seo\Mezzio\Factory\SitemapResponsesFactory;
 use Contenir\Seo\Mezzio\Factory\WorkflowNavigationPagesFactory;
+use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
 use Contenir\Seo\Mezzio\Sitemap\SitemapResponses;
 use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
 use Contenir\Seo\Mezzio\View\JsonLdHelper;
@@ -39,6 +41,7 @@ final class ConfigProvider
         return [
             'invokables' => [CurrentRequest::class => CurrentRequest::class, Graph::class => Graph::class],
             'factories'  => [
+                InspectMiddleware::class       => InspectMiddlewareFactory::class,
                 PageDefaultsInterface::class   => SectionPageDefaultsFactory::class,
                 SeoConfig::class               => SeoConfigFactory::class,
                 SeoHead::class                 => SeoHeadFactory::class,

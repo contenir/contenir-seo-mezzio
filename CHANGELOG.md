@@ -6,6 +6,19 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-05
+
+### Added
+
+- `Inspect\InspectMiddleware` answers `POST /api/seo/inspect` with what search engines would see of a record's
+  page: its status, title, description, share image and alt text, canonical, robots and JSON-LD nodes. The CMS
+  opens it with a signed preview token, as it does a preview, and the page is rendered as the preview would
+  render it. Pipe it after `PreviewMiddleware`.
+
+### Changed
+
+- Requires contenir/contenir-preview `^0.3` and contenir/contenir-preview-mezzio `^0.1`.
+
 ## [0.6.0] - 2026-11-05
 
 ### Added
