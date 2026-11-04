@@ -6,6 +6,22 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-04
+
+### Added
+
+- `Sections\SectionPageDefaults`: contenir-resource's `PageDefaultsInterface` from the `<seo type="…">` blocks in the
+  site's admin.xml. A resource entity's type picks its block, and the block makes its page of the resource's own
+  columns, read by name through contenir-db-model's `RowValues::of()`: it fills what the resource's getters leave
+  empty, and gives the robots directive, canonical address and schema type. The factory reads the file at
+  `contenir_seo.admin_xml`, `config/admin.xml` by default; the config provider offers it to the page metadata
+  builder. A site without the file, or a resource whose type no block maps, gets no defaults.
+
+### Changed
+
+- Requires contenir/contenir-seo `^0.4`, contenir/contenir-resource `^2.0.0-RC5` and contenir/contenir-db-model
+  `^2.0.0-rc6`, with `minimum-stability: dev` preferring stable, as contenir-resource does.
+
 ## [0.3.0] - 2026-10-30
 
 ### Added
