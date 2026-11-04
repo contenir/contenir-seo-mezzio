@@ -6,6 +6,7 @@ namespace Contenir\Seo\Mezzio\Tests\Unit\Sections;
 
 use Contenir\Metadata\MetadataInterface;
 use Contenir\Resource\Core\Metadata\PageDefaults;
+use Contenir\Resource\Core\Metadata\PageOverrides;
 use Contenir\Seo\Mezzio\Sections\SectionPageDefaults;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ProjectEntity;
 use Contenir\Seo\Sections\SectionMap;
@@ -45,7 +46,8 @@ final class SectionPageDefaultsTest extends TestCase
                 'abstract' => 'A house.',
                 'image_lg' => '/house.jpg',
                 'caption'  => 'The house from the garden',
-                'seo'      => '{"canonical": "/work/house", "robots": "noindex, follow"}',
+                'seo'      => '{"canonical": "/work/house", "robots": "noindex, follow", "title": "Share",'
+                    . ' "description": "Shared.", "image": "/share.jpg", "image_alt": "Share alt"}',
             ],
         );
 
@@ -58,6 +60,7 @@ final class SectionPageDefaultsTest extends TestCase
                 '/work/house',
                 'noindex, follow',
                 'CreativeWork',
+                new PageOverrides('Share', 'Shared.', '/share.jpg', 'Share alt'),
             ),
             $defaults->for(self::resource('project')),
         );
