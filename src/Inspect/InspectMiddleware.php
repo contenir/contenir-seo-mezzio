@@ -20,6 +20,7 @@ use SensitiveParameter;
 use function is_array;
 use function is_string;
 use function json_encode;
+use function str_starts_with;
 
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
@@ -31,10 +32,18 @@ use const JSON_UNESCAPED_UNICODE;
  * page with the token's values exactly as a preview does, then answers with
  * the page's head as JSON in place of the page. A token the site refuses is
  * answered with the refusal's status and reason.
+ *
+ * A page the site dispatches without routing, as a workflow page's preview
+ * is, would otherwise render at the endpoint's address and give that as its
+ * canonical, share URL and breadcrumbs. The CMS posts the record's public
+ * path as `path`, and the page is rendered there; a route or path the site
+ * resolves for the record itself takes its place.
  */
 final readonly class InspectMiddleware implements MiddlewareInterface
 {
     public const string ENDPOINT = '/api/seo/inspect';
+
+    public const string PATH_FIELD = 'path';
 
     public function __construct(
         private PreviewEntry $entry,
@@ -55,6 +64,7 @@ final readonly class InspectMiddleware implements MiddlewareInterface
             $request = $this->matcher->prepare(
                 $target,
                 $request->withMethod('GET')
+                    ->withUri($request->getUri()->withPath($this->path($request)))
                     ->withParsedBody([])
                     ->withHeader('Cache-Control', PreviewMiddleware::REQUEST_CACHE_CONTROL),
             );
@@ -80,6 +90,21 @@ final readonly class InspectMiddleware implements MiddlewareInterface
             ->withBody($this->streams->createStream(
                 (string) json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             ));
+    }
+
+    /**
+     * The record's public path the CMS posted, or the endpoint's when it posted none: a path
+     * on this site only, never another host's address.
+     */
+    private function path(ServerRequestInterface $request): string
+    {
+        $body = $request->getParsedBody();
+        /** @var mixed $path */
+        $path = is_array($body) ? $body[self::PATH_FIELD] ?? null : null;
+
+        return is_string($path) && str_starts_with($path, '/') && ! str_starts_with($path, '//')
+            ? $path
+            : self::ENDPOINT;
     }
 
     private function token(#[SensitiveParameter] ServerRequestInterface $request): ?string
