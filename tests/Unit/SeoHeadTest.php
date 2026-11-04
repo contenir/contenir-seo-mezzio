@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio\Tests\Unit;
 
+use Contenir\Resource\Core\Metadata\PageMetadata;
 use Contenir\Seo\Head\Article;
 use Contenir\Seo\JsonLd\Graph;
 use Contenir\Seo\Mezzio\CurrentRequest;
@@ -12,6 +13,7 @@ use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
 use Contenir\Seo\Mezzio\View\JsonLdHelper;
 use Contenir\Seo\Mezzio\View\SeoHelper;
 use Contenir\Seo\SeoConfig;
+use DateTimeImmutable;
 use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -68,9 +70,87 @@ final class SeoHeadTest extends TestCase
     }
 
     #[Test]
+    public function anArticleWithoutASchemaTypeIsAnArticle(): void
+    {
+        static::assertSame(
+            'Article',
+            SeoHead::mainNode(
+                new PageMetadata('https://www.example.test/news', title: 'News', type: PageMetadata::ARTICLE),
+            )
+                ?->type,
+        );
+    }
+
+    #[Test]
+    public function aPageTellsTheHeadItsTitleAndWhatItWritesItself(): void
+    {
+        $config = SeoSettings::config([
+            'extensions' => ['seo' => ['description' => 'Default', 'share_image' => '/share.jpg']],
+        ]);
+        $own = self::head('https://www.example.test/about', $config)
+            ->renderPage(new PageMetadata(
+                'https://www.example.test/about',
+                title: 'About',
+                description: 'Ours.',
+                image: '/ours.jpg',
+            ));
+        $none = self::head('https://www.example.test/contact', $config)->renderPage(null, 'Contact');
+
+        static::assertSame(
+            [true, false, false, true, true],
+            [
+                str_contains($own, '<title>About | Example</title>'),
+                str_contains($own, 'Default'),
+                str_contains($own, '/share.jpg'),
+                str_contains($none, '<title>Contact | Example</title>'),
+                str_contains($none, 'Default'),
+            ],
+        );
+    }
+
+    #[Test]
     public function aPageTitleFollowsTheSitesTemplate(): void
     {
         static::assertSame('About | Example', self::head('https://www.example.test/about')->build('About')->title);
+    }
+
+    #[Test]
+    public function aPageWithASchemaTypeIsDescribedAsThatType(): void
+    {
+        $head = self::head('https://www.example.test/work/a-project');
+        $head->renderPage(new PageMetadata(
+            'https://www.example.test/work/a-project',
+            title: 'A project',
+            schema: 'CreativeWork',
+        ));
+
+        static::assertSame(['CreativeWork', 'BreadcrumbList'], array_column($head->graph()->nodes(), '@type'));
+    }
+
+    #[Test]
+    public function aPageWithoutATypeOrATitleHasNoMainNode(): void
+    {
+        static::assertSame(
+            [null, null],
+            [
+                SeoHead::mainNode(new PageMetadata('https://www.example.test/a', title: 'A')),
+                SeoHead::mainNode(new PageMetadata('https://www.example.test/a', schema: 'WebPage')),
+            ],
+        );
+    }
+
+    #[Test]
+    public function aSchemaTypeWinsOverTheArticleOgType(): void
+    {
+        static::assertSame(
+            'NewsArticle',
+            SeoHead::mainNode(new PageMetadata(
+                'https://www.example.test/news',
+                title: 'News',
+                type: PageMetadata::ARTICLE,
+                schema: 'NewsArticle',
+            ))?->type,
+        );
     }
 
     #[Test]
@@ -150,6 +230,26 @@ final class SeoHeadTest extends TestCase
                 $head->graph(),
                 array_column($graph->nodes(), '@type'),
             ],
+        );
+    }
+
+    #[Test]
+    public function thePageMainNodeCarriesItsMetadata(): void
+    {
+        $published = new DateTimeImmutable('2026-10-01');
+        $updated   = new DateTimeImmutable('2026-10-02');
+
+        static::assertEquals(
+            new Article('https://www.example.test/a', 'A', 'About A.', '/a.jpg', $published, $updated, 'WebPage'),
+            SeoHead::mainNode(new PageMetadata(
+                'https://www.example.test/a',
+                title: 'A',
+                description: 'About A.',
+                image: '/a.jpg',
+                updated: $updated,
+                published: $published,
+                schema: 'WebPage',
+            )),
         );
     }
 

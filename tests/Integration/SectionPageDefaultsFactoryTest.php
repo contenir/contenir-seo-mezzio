@@ -16,6 +16,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function file_put_contents;
+use function glob;
+use function is_file;
 use function sys_get_temp_dir;
 use function tempnam;
 use function unlink;
@@ -26,6 +28,15 @@ final class SectionPageDefaultsFactoryTest extends TestCase
     private string $file = '';
 
     #[Test]
+    public function aCacheSettingOfFalseKeepsNothing(): void
+    {
+        file_put_contents($this->file, data: '<admin/>');
+        (new SectionPageDefaultsFactory())($this->container($this->file));
+
+        static::assertSame([false, []], [is_file("{$this->file}.cache"), glob("{$this->file}*.tmp")]);
+    }
+
+    #[Test]
     public function aSiteWithoutTheFileMapsNothing(): void
     {
         $resource                 = new ProjectEntity();
@@ -34,6 +45,18 @@ final class SectionPageDefaultsFactoryTest extends TestCase
         static::assertNull(
             (new SectionPageDefaultsFactory())($this->container("{$this->file}.missing"))->for($resource),
         );
+    }
+
+    #[Test]
+    public function keepsTheMapInTheConfiguredCacheFile(): void
+    {
+        file_put_contents($this->file, data: '<admin/>');
+        $cache = "{$this->file}.cache";
+        (new SectionPageDefaultsFactory())($this->container($this->file, $cache));
+        $kept = is_file($cache);
+        unlink($cache);
+
+        static::assertTrue($kept);
     }
 
     #[Test]
@@ -76,10 +99,10 @@ final class SectionPageDefaultsFactoryTest extends TestCase
         unlink($this->file);
     }
 
-    private function container(string $adminXml): ArrayContainer
+    private function container(string $adminXml, string|false $cache = false): ArrayContainer
     {
         return new ArrayContainer([
-            'config'             => ['contenir_seo' => ['admin_xml' => $adminXml]],
+            'config'             => ['contenir_seo' => ['admin_xml' => $adminXml, 'section_map_cache' => $cache]],
             EntityManager::class => new EntityManager($this->createStub(AdapterInterface::class)),
         ]);
     }
