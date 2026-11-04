@@ -9,12 +9,18 @@ use Contenir\Seo\Head\Article;
 use Contenir\Seo\JsonLd\Graph;
 use Contenir\Seo\Mezzio\CurrentRequest;
 use Contenir\Seo\Mezzio\SeoHead;
+use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
+use Contenir\Seo\Mezzio\Tests\TestAsset\FixedStrategy;
+use Contenir\Seo\Mezzio\Tests\TestAsset\RouteNameRouter;
 use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
+use Contenir\Seo\Mezzio\Tests\TestAsset\UnroutableRouter;
 use Contenir\Seo\Mezzio\View\JsonLdHelper;
 use Contenir\Seo\Mezzio\View\SeoHelper;
 use Contenir\Seo\SeoConfig;
 use DateTimeImmutable;
 use Laminas\Diactoros\ServerRequest;
+use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -27,6 +33,17 @@ use function str_contains;
 #[Group('unit')]
 final class SeoHeadTest extends TestCase
 {
+    /**
+     * @return array<string, array{RouterInterface, list<string>}>
+     */
+    public static function trailNamesProvider(): array
+    {
+        return [
+            'named as the navigation labels the pages'   => [new RouteNameRouter(), ['Example', 'Our work', 'Convoy']],
+            'named from the path when it cannot be read' => [new UnroutableRouter(), ['Example', 'Work', 'Convoy']],
+        ];
+    }
+
     private static function head(string $url, ?SeoConfig $config = null, array $homePaths = ['/']): SeoHead
     {
         $current = new CurrentRequest();
@@ -270,6 +287,23 @@ final class SeoHeadTest extends TestCase
                 in_array('og:description', self::keys($head, hasDescription: true, hasImage: true), strict: true),
             ],
         );
+    }
+
+    /**
+     * @param list<string> $names
+     */
+    #[Test]
+    #[DataProvider('trailNamesProvider')]
+    public function theTrailIsNamedFromTheSitesNavigation(RouterInterface $router, array $names): void
+    {
+        $current = new CurrentRequest();
+        $current->set(new ServerRequest(uri: 'https://www.example.test/work/convoy'));
+        $head = new SeoHead(SeoSettings::config(), $current, navigation: new WorkflowNavigationPages(
+            new FixedStrategy([['route' => 'work', 'label' => 'Our work']], ['work' => []]),
+            $router,
+        ));
+
+        static::assertSame($names, array_column($head->build('Convoy')->jsonLd[0]['itemListElement'] ?? [], 'name'));
     }
 
     #[Test]

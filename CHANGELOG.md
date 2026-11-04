@@ -6,6 +6,19 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-05
+
+### Added
+
+- A page's breadcrumb trail names each step as the site's workflow navigation labels it, and leaves out a step that
+  is no page of the site: Sector7g's projects at `/project/a-house` no longer link to a `/project` that isn't there.
+  `WorkflowNavigationPages::names()` gives the routed pages' labels by address. With `sitemap_navigation` off, or a
+  navigation that can't be read, steps are named from the path as before.
+
+### Changed
+
+- Requires contenir/contenir-seo `^0.7`.
+
 ## [0.7.1] - 2026-11-05
 
 ### Fixed

@@ -23,6 +23,7 @@ use Laminas\View\HelperPluginManager;
 use Laminas\View\Renderer\PhpRenderer;
 use Mezzio\Router\RouterInterface;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -44,6 +45,17 @@ use function str_contains;
 final class ApplicationTest extends TestCase
 {
     use TempDirectoryTrait;
+
+    /**
+     * @return array<string, array{array<string, mixed>, string}>
+     */
+    public static function trailProvider(): array
+    {
+        return [
+            'from the navigation'                     => [[], 'About us'],
+            'from the path when the sitemap skips it' => [['sitemap_navigation' => false], 'About'],
+        ];
+    }
 
     private static function handle(ServiceManager $container, string $url): ResponseInterface
     {
@@ -123,6 +135,22 @@ final class ApplicationTest extends TestCase
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
+    #[Test]
+    #[DataProvider('trailProvider')]
+    public function thePagesTrailIsNamed(array $options, string $name): void
+    {
+        $container = $this->container($options);
+        self::handle($container, 'https://www.example.test/about/team');
+
+        static::assertSame(
+            ['Example', $name, 'Team'],
+            array_column($container->get(SeoHead::class)->build('Team')->jsonLd[0]['itemListElement'] ?? [], 'name'),
+        );
+    }
+
     #[Test]
     public function theSeoHelperRendersTheHeadForTheRecordedRequest(): void
     {
@@ -193,7 +221,11 @@ final class ApplicationTest extends TestCase
             'contenir_seo'     => ['extensions_config' => $this->directory, ...$options],
         ]);
         $container->setService(ResourceStrategy::class, new FixedStrategy(
-            [['route' => 'home'], ['route' => 'about'], ['route' => 'thanks', 'visible' => false]],
+            [
+                ['route' => 'home'],
+                ['route' => 'about', 'label' => 'About us'],
+                ['route' => 'thanks', 'visible' => false],
+            ],
             ['home' => [], 'about' => [], 'thanks' => []],
         ));
         $container->setService(RouterInterface::class, new RouteNameRouter());

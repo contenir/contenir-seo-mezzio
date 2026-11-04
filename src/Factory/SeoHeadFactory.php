@@ -7,6 +7,7 @@ namespace Contenir\Seo\Mezzio\Factory;
 use Contenir\Seo\JsonLd\Graph;
 use Contenir\Seo\Mezzio\CurrentRequest;
 use Contenir\Seo\Mezzio\SeoHead;
+use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
 use Contenir\Seo\SeoConfig;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -29,6 +30,9 @@ final class SeoHeadFactory
             Services::get($container, CurrentRequest::class, CurrentRequest::class),
             Options::fromContainer($container)->strings('home_paths', ['/']),
             Services::get($container, Graph::class, Graph::class),
+            Options::fromContainer($container)->flag('sitemap_navigation', true)
+                ? Services::get($container, WorkflowNavigationPages::class, WorkflowNavigationPages::class)
+                : null,
         );
     }
 }

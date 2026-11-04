@@ -53,6 +53,26 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
     }
 
     /**
+     * Every routed page's name, as the navigation labels it, by its address: for the breadcrumb
+     * trail, which leaves out a step that is none of them.
+     *
+     * @return array<string, string>
+     *
+     * @throws CacheException When the workflow cache cannot be read or written.
+     * @throws ContainerExceptionInterface When a workflow cannot be created.
+     * @throws RouterException When a page's route needs parameters to generate its URL.
+     */
+    public function names(): array
+    {
+        $names = [];
+        foreach ($this->routed() as $routed) {
+            $names[$routed->page->url] = $routed->label;
+        }
+
+        return array_filter($names, is_string(...));
+    }
+
+    /**
      * @return list<Page>
      *
      * @throws CacheException When the workflow cache cannot be read or written.
@@ -108,6 +128,7 @@ final readonly class WorkflowNavigationPages implements SitemapSourceInterface
                 $found[] = new RoutedPage(
                     new Page($this->router->generateUri($route), self::modified($page['lastmod'] ?? null)),
                     false !== ($page['visible'] ?? true),
+                    RoutedPage::label($page['label'] ?? null),
                 );
             }
 

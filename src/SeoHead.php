@@ -11,7 +11,11 @@ use Contenir\Seo\Head\HeadBuilder;
 use Contenir\Seo\Head\HtmlRenderer;
 use Contenir\Seo\Head\PageContext;
 use Contenir\Seo\JsonLd\Graph;
+use Contenir\Seo\Mezzio\Sitemap\WorkflowNavigationPages;
 use Contenir\Seo\SeoConfig;
+use Laminas\Cache\Exception\ExceptionInterface as CacheException;
+use Mezzio\Router\Exception\RuntimeException as RouterException;
+use Psr\Container\ContainerExceptionInterface;
 
 use function in_array;
 
@@ -41,6 +45,7 @@ final readonly class SeoHead
         private CurrentRequest $request,
         private array $homePaths = ['/'],
         private Graph $graph = new Graph(),
+        private ?WorkflowNavigationPages $navigation = null,
     ) {}
 
     /**
@@ -91,6 +96,7 @@ final readonly class SeoHead
             $hasImage,
             $path,
             $article,
+            $this->pages(),
         ));
     }
 
@@ -136,5 +142,20 @@ final readonly class SeoHead
             null !== $page?->image,
             null === $page ? null : self::mainNode($page),
         );
+    }
+
+    /**
+     * The site's pages' names by address, for the breadcrumb trail, or none where the workflow
+     * navigation is not used or cannot be read: each step is then named from its path.
+     *
+     * @return ?array<string, string>
+     */
+    private function pages(): ?array
+    {
+        try {
+            return $this->navigation?->names();
+        } catch (CacheException|ContainerExceptionInterface|RouterException) {
+            return null;
+        }
     }
 }
