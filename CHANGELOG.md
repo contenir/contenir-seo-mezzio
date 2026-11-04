@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-05
+
+### Added
+
+- The sitemap lists each workflow page's share image: the one the site's own `PageMetadataBuilder` gives the page's
+  head, from the record the page's route carries, so the sitemap and the page never disagree. It needs
+  contenir-resource's `ResourceManagerInterface`, which every resource site has, and is switched off with
+  `contenir_seo.sitemap_images: false`. A page without a published record, or whose record has no share image,
+  lists none.
+
 ## [0.8.0] - 2026-11-05
 
 ### Added

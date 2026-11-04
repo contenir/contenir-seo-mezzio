@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio\Tests\Integration;
 
+use Contenir\Resource\Core\Metadata\PageMetadataBuilder;
+use Contenir\Resource\Core\ResourceManagerInterface;
 use Contenir\Seo\Mezzio\ConfigProvider;
 use Contenir\Seo\Mezzio\Exception\InvalidServiceException;
 use Contenir\Seo\Mezzio\SeoHead;
@@ -11,6 +13,7 @@ use Contenir\Seo\Mezzio\SeoMiddleware;
 use Contenir\Seo\Mezzio\Sitemap\SitemapResponses;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedPages;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedStrategy;
+use Contenir\Seo\Mezzio\Tests\TestAsset\ImagedProject;
 use Contenir\Seo\Mezzio\Tests\TestAsset\RouteNameRouter;
 use Contenir\Seo\Mezzio\Tests\Trait\TempDirectoryTrait;
 use Contenir\Seo\Sitemap\Page;
@@ -35,6 +38,7 @@ use stdClass;
 use function array_column;
 use function array_merge_recursive;
 use function str_contains;
+use function substr_count;
 
 /**
  * The package in a real service container: the middleware answering the
@@ -45,6 +49,18 @@ use function str_contains;
 final class ApplicationTest extends TestCase
 {
     use TempDirectoryTrait;
+
+    /**
+     * @return array<string, array{array<string, mixed>, ?string, int}>
+     */
+    public static function sitemapImagesProvider(): array
+    {
+        return [
+            'from the site\'s records'        => [[], '/asset/about.jpg', 1],
+            'left out when switched off'      => [['sitemap_images' => false], '/asset/about.jpg', 0],
+            'none without a resource manager' => [[], null, 0],
+        ];
+    }
 
     /**
      * @return array<string, array{array<string, mixed>, string}>
@@ -172,6 +188,30 @@ final class ApplicationTest extends TestCase
         );
     }
 
+    /**
+     * @param array<string, mixed> $options
+     * @param ?string $image The record's share image, or null for a site without a resource manager
+     */
+    #[Test]
+    #[DataProvider('sitemapImagesProvider')]
+    public function theSitemapListsEachPagesShareImage(array $options, ?string $image, int $listed): void
+    {
+        $container = $this->container($options);
+        if (null !== $image) {
+            $about        = new ImagedProject();
+            $about->image = $image;
+            $resources    = $this->createStub(ResourceManagerInterface::class);
+            $resources->method('findActive')->willReturn($about);
+            $container->setService(ResourceManagerInterface::class, $resources);
+            $container->setService(PageMetadataBuilder::class, new PageMetadataBuilder());
+        }
+
+        static::assertSame($listed, substr_count(
+            (string) self::handle($container, 'https://www.example.test/sitemap.xml')->getBody(),
+            needle: '<image:loc>https://www.example.test/asset/about.jpg</image:loc>',
+        ));
+    }
+
     #[Test]
     public function theSitemapListsTheNavigationAndTheSitesSources(): void
     {
@@ -226,7 +266,7 @@ final class ApplicationTest extends TestCase
                 ['route' => 'about', 'label' => 'About us'],
                 ['route' => 'thanks', 'visible' => false],
             ],
-            ['home' => [], 'about' => [], 'thanks' => []],
+            ['home' => [], 'about' => ['options' => ['defaults' => ['id' => ['resourceId' => 2]]]], 'thanks' => []],
         ));
         $container->setService(RouterInterface::class, new RouteNameRouter());
         $container->setService(FixedPages::class, new FixedPages([new Page('/work/convoy')]));
