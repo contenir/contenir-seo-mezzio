@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "afae4e7f5600a46e0140a5f5adde244f",
+    "content-hash": "601436a68d64799aed0a5ebb0f2ed3e7",
     "packages": [
         {
             "name": "contenir/contenir-contact",
@@ -61,21 +61,198 @@
             "time": "2026-10-30T00:47:28+00:00"
         },
         {
-            "name": "contenir/contenir-seo",
-            "version": "v0.3.0",
+            "name": "contenir/contenir-db-model",
+            "version": "v2.0.0-rc6",
             "source": {
                 "type": "git",
-                "url": "git@github.com:contenir/contenir-seo.git",
-                "reference": "f21aee1bde994f204509f032e37d324007413686"
+                "url": "https://github.com/contenir/contenir-db-model.git",
+                "reference": "ae789c39e290cc825bff2d3c09f21a034098c584"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/f21aee1bde994f204509f032e37d324007413686",
-                "reference": "f21aee1bde994f204509f032e37d324007413686",
+                "url": "https://api.github.com/repos/contenir/contenir-db-model/zipball/ae789c39e290cc825bff2d3c09f21a034098c584",
+                "reference": "ae789c39e290cc825bff2d3c09f21a034098c584",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "php-db/phpdb": "0.6.x-dev",
+                "psr/container": "^1.1 || ^2.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
+                "php-db/phpdb-mysql": "^0.4.0",
+                "php-db/phpdb-pgsql": "0.1.x-dev",
+                "php-db/phpdb-sqlite": "^0.2.0",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "component": "Contenir\\Db\\Model",
+                    "config-provider": "Contenir\\Db\\Model\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Db\\Model\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Attribute-mapped, typed-property data mapper built on php-db/phpdb",
+            "homepage": "https://contenir.com.au",
+            "keywords": [
+                "contenir",
+                "data-mapper",
+                "orm",
+                "php-db",
+                "repository"
+            ],
+            "support": {
+                "docs": "https://docs.contenir.com.au/contenir-db-model/",
+                "issues": "https://github.com/contenir/contenir-db-model/issues",
+                "source": "https://github.com/contenir/contenir-db-model"
+            },
+            "time": "2026-11-04T11:10:57+00:00"
+        },
+        {
+            "name": "contenir/contenir-metadata",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-metadata.git",
+                "reference": "fbd36a7325429e96bdacf6e9f312e6a66564220f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-metadata/zipball/fbd36a7325429e96bdacf6e9f312e6a66564220f",
+                "reference": "fbd36a7325429e96bdacf6e9f312e6a66564220f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "require-dev": {
+                "php-db/phpdb-qa-tools": "0.1.x-dev",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Metadata\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Page metadata contract (title, description, image, modified and publish dates) for Contenir resources",
+            "homepage": "https://contenir.com.au",
+            "keywords": [
+                "contenir",
+                "laminas",
+                "metadata",
+                "seo"
+            ],
+            "support": {
+                "docs": "https://docs.contenir.com.au/contenir-metadata/",
+                "issues": "https://contenir.com.au/issues",
+                "source": "https://github.com/contenir/contenir-metadata"
+            },
+            "time": "2026-10-05T09:28:59+00:00"
+        },
+        {
+            "name": "contenir/contenir-resource",
+            "version": "v2.0.0-RC5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-resource.git",
+                "reference": "eafaf4af7f01130cd184569c0fb7eda58e7cae49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-resource/zipball/eafaf4af7f01130cd184569c0fb7eda58e7cae49",
+                "reference": "eafaf4af7f01130cd184569c0fb7eda58e7cae49",
+                "shasum": ""
+            },
+            "require": {
+                "contenir/contenir-db-model": "^2.0.0-rc5",
+                "contenir/contenir-metadata": "^2.0",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/container": "^1.1 || ^2.0"
+            },
+            "require-dev": {
+                "contenir/contenir-preview": "^0.3",
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
+                "laminas/laminas-servicemanager": "^3.22 || ^4.0",
+                "php-db/phpdb-sqlite": "^0.2.0 || 0.3.x-dev",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "suggest": {
+                "contenir/contenir-preview": "Lets a CMS preview show a resource's unsaved values (see docs/previews.md)"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "config-provider": "Contenir\\Resource\\Core\\ConfigProvider"
+                },
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Resource\\Core\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Contenir resources on contenir-db-model 2: attribute-mapped resource, collection and type entities, repositories, the page tree, page metadata, summaries and link normalisation. Framework neutral.",
+            "homepage": "https://contenir.com.au",
+            "keywords": [
+                "contenir",
+                "data-mapper",
+                "metadata",
+                "resource",
+                "seo"
+            ],
+            "support": {
+                "docs": "https://github.com/contenir/contenir-resource/tree/main/docs",
+                "issues": "https://github.com/contenir/contenir-resource/issues",
+                "source": "https://github.com/contenir/contenir-resource"
+            },
+            "time": "2026-11-04T11:09:55+00:00"
+        },
+        {
+            "name": "contenir/contenir-seo",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-seo.git",
+                "reference": "8178bf870d29931ca51f911d714e1dbdc81d86b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/8178bf870d29931ca51f911d714e1dbdc81d86b2",
+                "reference": "8178bf870d29931ca51f911d714e1dbdc81d86b2",
                 "shasum": ""
             },
             "require": {
                 "contenir/contenir-contact": "^0.1",
+                "ext-dom": "*",
                 "ext-xmlwriter": "*",
                 "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
             },
@@ -149,7 +326,7 @@
                 "issues": "https://github.com/contenir/contenir-seo/issues",
                 "source": "https://github.com/contenir/contenir-seo"
             },
-            "time": "2026-10-30T02:28:18+00:00"
+            "time": "2026-11-04T11:10:29+00:00"
         },
         {
             "name": "contenir/contenir-workflow-mezzio",
@@ -1217,6 +1394,73 @@
                 }
             ],
             "time": "2025-10-11T09:18:27+00:00"
+        },
+        {
+            "name": "php-db/phpdb",
+            "version": "0.6.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-db/phpdb.git",
+                "reference": "54326381bc4dd2ad21c0c49ed08a97932ee10e84"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-db/phpdb/zipball/54326381bc4dd2ad21c0c49ed08a97932ee10e84",
+                "reference": "54326381bc4dd2ad21c0c49ed08a97932ee10e84",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-servicemanager": "^3.0.0 || ^4.0.0",
+                "laminas/laminas-stdlib": "^3.20.0",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "conflict": {
+                "zendframework/zend-db": "*"
+            },
+            "require-dev": {
+                "infection/infection": "^0.34.1",
+                "laminas/laminas-eventmanager": "^3.14.0",
+                "laminas/laminas-hydrator": "^4.6.0",
+                "php-db/phpdb-qa-tools": "0.1.x-dev",
+                "phpbench/phpbench": "^1.4",
+                "phpunit/phpunit": "^11.5.42",
+                "rector/rector": "^2.0"
+            },
+            "suggest": {
+                "laminas/laminas-eventmanager": "Laminas\\EventManager component",
+                "laminas/laminas-hydrator": "(^5.0.0) Laminas\\Hydrator component for using HydratingResultSets"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "config-provider": "PhpDb\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpDb\\": "src/",
+                    "CustomRule\\PHPUnit\\": "rector/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Database abstraction layer, SQL abstraction, result set abstraction, and RowDataGateway and TableDataGateway implementations",
+            "homepage": "https://php-db.dev",
+            "keywords": [
+                "db",
+                "laminas",
+                "mezzio",
+                "php-db"
+            ],
+            "support": {
+                "docs": "https://docs.php-db.dev/",
+                "issues": "https://github.com/php-db/phpdb/issues",
+                "source": "https://github.com/php-db/phpdb"
+            },
+            "time": "2026-11-04T05:10:13+00:00"
         },
         {
             "name": "psr/cache",
@@ -5977,11 +6221,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "contenir/contenir-qa-tools": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
