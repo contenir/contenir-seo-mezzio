@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use function array_keys;
 use function file_put_contents;
 use function filemtime;
-use function fileperms;
 use function filesize;
 use function glob;
 use function is_dir;
@@ -27,7 +26,6 @@ use function sprintf;
 use function str_replace;
 use function sys_get_temp_dir;
 use function touch;
-use function umask;
 use function uniqid;
 use function unlink;
 
@@ -150,6 +148,14 @@ final class SectionMapFileTest extends TestCase
     }
 
     #[Test]
+    public function aMissingCacheFolderKeepsNothing(): void
+    {
+        $map = (new SectionMapFile($this->admin(), "{$this->dir}/missing/map.cache"))->load();
+
+        static::assertSame([['project'], false], [array_keys($map->blocks), is_dir("{$this->dir}/missing")]);
+    }
+
+    #[Test]
     public function aSiteWithoutTheAdminXmlMapsNothing(): void
     {
         static::assertEquals(new SectionMap(), (new SectionMapFile("{$this->dir}/none.xml", $this->cache()))->load());
@@ -161,18 +167,6 @@ final class SectionMapFileTest extends TestCase
         $map = (new SectionMapFile($this->admin(), $this->cache()))->load();
 
         static::assertSame([['project'], true], [array_keys($map->blocks), is_file($this->cache())]);
-    }
-
-    #[Test]
-    public function theCacheFolderIsMadeWhenMissing(): void
-    {
-        $cache = "{$this->dir}/deeper/still/map.cache";
-        (new SectionMapFile($this->admin(), $cache))->load();
-
-        static::assertSame(
-            [true, [], 0o775 & ~umask()],
-            [is_file($cache), self::files("{$this->dir}/deeper/still/*.tmp"), fileperms("{$this->dir}/deeper") & 0o777],
-        );
     }
 
     #[Test]

@@ -14,8 +14,8 @@ adheres to [Semantic Versioning](https://semver.org/).
   own description and share image, and its main JSON-LD node. `SeoHead::mainNode()` makes that node of the schema
   type the site's section map gives the page, or an Article when its og:type is article.
 - The section map is kept in `contenir_seo.section_map_cache`, `data/cache/contenir-seo-section-map.cache` by
-  default, and rebuilt only when the admin.xml changes; `false` keeps no cache and reads the admin.xml on every
-  request.
+  default, and rebuilt only when the admin.xml changes. `false`, or a cache folder that doesn't exist, keeps no
+  cache and reads the admin.xml on every request.
 
 ### Changed
 
