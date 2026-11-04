@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-05
+
+### Fixed
+
+- `/api/seo/inspect` rendered a page the site dispatches without routing, as a workflow page's preview is, at the
+  endpoint's own address, which its canonical, share URL and breadcrumbs then gave. The CMS now posts the record's
+  public path as `path`, and the page is rendered there; a route or path the site resolves itself still wins.
+- The page is rendered through `SeoMiddleware` once more at that path, so its head reads the record's path, and the
+  answer gains `robotsHeader`: the X-Robots-Tag the page is sent with, such as an undiscoverable page's.
+
 ## [0.7.0] - 2026-11-05
 
 ### Added

@@ -17,6 +17,7 @@ use Contenir\Preview\Token\TokenVerifier;
 use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedClock;
 use Contenir\Seo\Mezzio\Tests\TestAsset\HandlerResolver;
+use Contenir\Seo\Mezzio\Tests\TestAsset\RobotsHeader;
 use Contenir\SiteToken\Replay\InMemoryReplayGuard;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\ResponseFactory;
@@ -58,6 +59,14 @@ final class InspectMiddlewareTest extends TestCase
             'not from the root'       => ['work/house', InspectMiddleware::ENDPOINT],
             'another host\'s address' => ['//elsewhere.test/house', InspectMiddleware::ENDPOINT],
         ];
+    }
+
+    /**
+     * @return array<string, array{?string}>
+     */
+    public static function robotsHeaderProvider(): array
+    {
+        return ['sent' => ['noindex, follow'], 'none' => [null]];
     }
 
     private static function config(): PreviewConfig
@@ -118,6 +127,15 @@ final class InspectMiddlewareTest extends TestCase
                 ...self::pick(self::json($response), 'status', 'title', 'canonical'),
             ],
         );
+    }
+
+    #[Test]
+    #[DataProvider('robotsHeaderProvider')]
+    public function answersWithTheRobotsHeaderTheSitesSeoSendsThePage(?string $robots): void
+    {
+        $response = $this->middleware($robots)->process($this->posted(self::token()), $this->site('<html></html>'));
+
+        static::assertSame($robots, self::json($response)['robotsHeader']);
     }
 
     #[Test]
@@ -235,7 +253,7 @@ final class InspectMiddlewareTest extends TestCase
         );
     }
 
-    private function middleware(): InspectMiddleware
+    private function middleware(?string $robots = null): InspectMiddleware
     {
         $clock  = new FixedClock();
         $router = $this->createStub(RouterInterface::class);
@@ -257,6 +275,7 @@ final class InspectMiddlewareTest extends TestCase
             new TargetMatcher($router),
             new ResponseFactory(),
             new StreamFactory(),
+            new RobotsHeader($robots),
         );
     }
 

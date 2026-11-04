@@ -9,10 +9,14 @@ use Contenir\Preview\PreviewContext;
 use Contenir\Preview\PreviewEntry;
 use Contenir\Preview\Resolver\ResolverRegistry;
 use Contenir\Preview\Token\TokenVerifier;
+use Contenir\Seo\Mezzio\CurrentRequest;
 use Contenir\Seo\Mezzio\Factory\InspectMiddlewareFactory;
 use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
+use Contenir\Seo\Mezzio\SeoMiddleware;
+use Contenir\Seo\Mezzio\Sitemap\SitemapResponses;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ArrayContainer;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedClock;
+use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
 use Contenir\SiteToken\Replay\InMemoryReplayGuard;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequest;
@@ -48,6 +52,11 @@ final class InspectMiddlewareFactoryTest extends TestCase
             RouterInterface::class          => $this->createStub(RouterInterface::class),
             ResponseFactoryInterface::class => new ResponseFactory(),
             StreamFactoryInterface::class   => new StreamFactory(),
+            SeoMiddleware::class            => new SeoMiddleware(
+                SeoSettings::config(),
+                new CurrentRequest(),
+                new SitemapResponses(SeoSettings::config(), new ResponseFactory(), new StreamFactory(), [], 2),
+            ),
         ]));
         $response = $middleware->process(
             new ServerRequest(
