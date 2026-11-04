@@ -6,6 +6,21 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-05
+
+### Added
+
+- `SeoHead::renderPage()`: the head for a page from its `PageMetadata`, with its own title, whether it writes its
+  own description and share image, and its main JSON-LD node. `SeoHead::mainNode()` makes that node of the schema
+  type the site's section map gives the page, or an Article when its og:type is article.
+- The section map is kept in `contenir_seo.section_map_cache`, `data/cache/contenir-seo-section-map.cache` by
+  default, and rebuilt only when the admin.xml changes. `false`, or a cache folder that doesn't exist, keeps no
+  cache and reads the admin.xml on every request.
+
+### Changed
+
+- Requires contenir/contenir-seo `^0.6`, whose main JSON-LD node takes any schema type.
+
 ## [0.5.0] - 2026-11-04
 
 ### Added

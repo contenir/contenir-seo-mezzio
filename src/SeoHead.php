@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio;
 
+use Contenir\Resource\Core\Metadata\PageMetadata;
 use Contenir\Seo\Head\Article;
 use Contenir\Seo\Head\Head;
 use Contenir\Seo\Head\HeadBuilder;
@@ -41,6 +42,29 @@ final readonly class SeoHead
         private array $homePaths = ['/'],
         private Graph $graph = new Graph(),
     ) {}
+
+    /**
+     * The page's main JSON-LD node from its metadata: of the schema type the
+     * site's section map gives it, or an Article when its og:type is article,
+     * and none when it has neither or no title.
+     */
+    public static function mainNode(PageMetadata $page): ?Article
+    {
+        $type = $page->schema ?? (PageMetadata::ARTICLE === $page->type ? 'Article' : null);
+        if (null === $type || null === $page->title) {
+            return null;
+        }
+
+        return new Article(
+            $page->url,
+            $page->title,
+            $page->description,
+            $page->image,
+            $page->published,
+            $page->updated,
+            $type,
+        );
+    }
 
     /**
      * The head's parts for the page, for a template that writes its own markup.
@@ -97,5 +121,20 @@ final readonly class SeoHead
         $this->graph->append(...$head->jsonLd);
 
         return (new HtmlRenderer())->tags($head);
+    }
+
+    /**
+     * The head's markup for a page with metadata, as render() writes it: the
+     * page's own title, or $title for a page without metadata, whether it has
+     * its own description and share image, and its main JSON-LD node.
+     */
+    public function renderPage(?PageMetadata $page, ?string $title = null): string
+    {
+        return $this->render(
+            $page->title ?? $title,
+            null !== $page?->description,
+            null !== $page?->image,
+            null === $page ? null : self::mainNode($page),
+        );
     }
 }
