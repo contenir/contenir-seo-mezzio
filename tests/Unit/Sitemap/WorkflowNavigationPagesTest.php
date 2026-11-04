@@ -72,6 +72,25 @@ final class WorkflowNavigationPagesTest extends TestCase
     }
 
     #[Test]
+    public function thePagesAreNamedByAddressAsTheNavigationLabelsThem(): void
+    {
+        $navigation = new WorkflowNavigationPages(
+            new FixedStrategy(
+                [
+                    ['route' => 'work', 'label' => 'Our work', 'pages' => [['route' => 'convoy', 'label' => 'Convoy']]],
+                    ['route' => 'about', 'label' => ''],
+                    ['route' => 'thanks', 'label' => 3],
+                    ['route' => 'contact'],
+                ],
+                ['work' => [], 'convoy' => [], 'about' => [], 'thanks' => [], 'contact' => []],
+            ),
+            new RouteNameRouter(),
+        );
+
+        static::assertSame(['/work' => 'Our work', '/convoy' => 'Convoy'], $navigation->names());
+    }
+
+    #[Test]
     public function theUndiscoverablePagesAreGivenByAddress(): void
     {
         $navigation = new WorkflowNavigationPages(
