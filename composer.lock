@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "601436a68d64799aed0a5ebb0f2ed3e7",
+    "content-hash": "99a51181da0060dc75a4baa47239735d",
     "packages": [
         {
             "name": "contenir/contenir-contact",
@@ -173,16 +173,16 @@
         },
         {
             "name": "contenir/contenir-resource",
-            "version": "v2.0.0-RC5",
+            "version": "v2.0.0-RC6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-resource.git",
-                "reference": "eafaf4af7f01130cd184569c0fb7eda58e7cae49"
+                "reference": "125f31375ad00e2e01fed3a8405f3798c99e4201"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-resource/zipball/eafaf4af7f01130cd184569c0fb7eda58e7cae49",
-                "reference": "eafaf4af7f01130cd184569c0fb7eda58e7cae49",
+                "url": "https://api.github.com/repos/contenir/contenir-resource/zipball/125f31375ad00e2e01fed3a8405f3798c99e4201",
+                "reference": "125f31375ad00e2e01fed3a8405f3798c99e4201",
                 "shasum": ""
             },
             "require": {
@@ -234,20 +234,20 @@
                 "issues": "https://github.com/contenir/contenir-resource/issues",
                 "source": "https://github.com/contenir/contenir-resource"
             },
-            "time": "2026-11-04T11:09:55+00:00"
+            "time": "2026-11-04T12:47:11+00:00"
         },
         {
             "name": "contenir/contenir-seo",
-            "version": "v0.4.0",
+            "version": "v0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-seo.git",
-                "reference": "8178bf870d29931ca51f911d714e1dbdc81d86b2"
+                "reference": "eb85573b9359e228a6ca4da7816fe07d7d444306"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/8178bf870d29931ca51f911d714e1dbdc81d86b2",
-                "reference": "8178bf870d29931ca51f911d714e1dbdc81d86b2",
+                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/eb85573b9359e228a6ca4da7816fe07d7d444306",
+                "reference": "eb85573b9359e228a6ca4da7816fe07d7d444306",
                 "shasum": ""
             },
             "require": {
@@ -326,7 +326,7 @@
                 "issues": "https://github.com/contenir/contenir-seo/issues",
                 "source": "https://github.com/contenir/contenir-seo"
             },
-            "time": "2026-11-04T11:10:29+00:00"
+            "time": "2026-11-04T12:47:50+00:00"
         },
         {
             "name": "contenir/contenir-workflow-mezzio",

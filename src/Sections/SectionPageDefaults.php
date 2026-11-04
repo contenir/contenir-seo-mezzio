@@ -9,12 +9,14 @@ use Contenir\Metadata\MetadataInterface;
 use Contenir\Resource\Core\Entity\AbstractResourceEntity;
 use Contenir\Resource\Core\Metadata\PageDefaults;
 use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
+use Contenir\Resource\Core\Metadata\PageOverrides;
 use Contenir\Seo\Sections\SectionMap;
 use Override;
 
 /**
  * A resource's page defaults from the <seo> block its type has in the site's
- * admin.xml, read from the resource's own columns. A resource whose type no
+ * admin.xml, read from the resource's own columns, with the record's own
+ * overrides from its advanced column, which win over the page's. A resource whose type no
  * block maps, or that isn't a resource entity, has none.
  */
 final readonly class SectionPageDefaults implements PageDefaultsInterface
@@ -45,6 +47,12 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
             canonical: $page->canonical,
             robots: $page->robots,
             schema: $page->schema,
+            overrides: new PageOverrides(
+                $page->overrides->title,
+                $page->overrides->description,
+                $page->overrides->image,
+                $page->overrides->imageAlt,
+            ),
         );
     }
 }

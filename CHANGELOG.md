@@ -6,6 +6,17 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-04
+
+### Added
+
+- A record's own share title, description, image and alt text, from its advanced column, reach the page as
+  contenir-resource's `PageOverrides`, which win over the resource's getters.
+
+### Changed
+
+- Requires contenir/contenir-seo `^0.5` and contenir/contenir-resource `^2.0.0-RC6`.
+
 ## [0.4.0] - 2026-11-04
 
 ### Added
