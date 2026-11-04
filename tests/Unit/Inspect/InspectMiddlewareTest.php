@@ -16,6 +16,8 @@ use Contenir\Preview\Token\TokenSigner;
 use Contenir\Preview\Token\TokenVerifier;
 use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
 use Contenir\Seo\Mezzio\Tests\TestAsset\FixedClock;
+use Contenir\Seo\Mezzio\Tests\TestAsset\HandlerResolver;
+use Contenir\Seo\Mezzio\Tests\TestAsset\RobotsHeader;
 use Contenir\SiteToken\Replay\InMemoryReplayGuard;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\ResponseFactory;
@@ -24,6 +26,7 @@ use Laminas\Diactoros\StreamFactory;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -43,6 +46,28 @@ final class InspectMiddlewareTest extends TestCase
     private const string SHARED = 'a-secret-of-at-least-thirty-two-bytes!!';
 
     private ?ServerRequestInterface $rendered = null;
+
+    /**
+     * @return array<string, array{mixed, string}>
+     */
+    public static function pathProvider(): array
+    {
+        return [
+            'the record\'s path'      => ['/work/house', '/work/house'],
+            'none'                    => [null, InspectMiddleware::ENDPOINT],
+            'not text'                => [['/work/house'], InspectMiddleware::ENDPOINT],
+            'not from the root'       => ['work/house', InspectMiddleware::ENDPOINT],
+            'another host\'s address' => ['//elsewhere.test/house', InspectMiddleware::ENDPOINT],
+        ];
+    }
+
+    /**
+     * @return array<string, array{?string}>
+     */
+    public static function robotsHeaderProvider(): array
+    {
+        return ['sent' => ['noindex, follow'], 'none' => [null]];
+    }
 
     private static function config(): PreviewConfig
     {
@@ -73,10 +98,10 @@ final class InspectMiddlewareTest extends TestCase
         return $picked;
     }
 
-    private static function token(): string
+    private static function token(string $section = 'site.page.home'): string
     {
         return (new TokenSigner(self::config(), new FixedClock()))->sign(
-            new PreviewRecord('site.page.home', ['resource_id' => '7'], ['slug' => 'spa', 'title' => 'Edited title']),
+            new PreviewRecord($section, ['resource_id' => '7'], ['slug' => 'spa', 'title' => 'Edited title']),
             '12',
         );
     }
@@ -102,6 +127,29 @@ final class InspectMiddlewareTest extends TestCase
                 ...self::pick(self::json($response), 'status', 'title', 'canonical'),
             ],
         );
+    }
+
+    #[Test]
+    #[DataProvider('robotsHeaderProvider')]
+    public function answersWithTheRobotsHeaderTheSitesSeoSendsThePage(?string $robots): void
+    {
+        $response = $this->middleware($robots)->process($this->posted(self::token()), $this->site('<html></html>'));
+
+        static::assertSame($robots, self::json($response)['robotsHeader']);
+    }
+
+    #[Test]
+    public function aPathTheSiteResolvesForTheRecordWinsOverThePostedOne(): void
+    {
+        $this->middleware()->process(
+            $this->posted(self::token())->withParsedBody([
+                'contenir_preview'            => self::token(),
+                InspectMiddleware::PATH_FIELD => '/work/house',
+            ]),
+            $this->site('<html></html>'),
+        );
+
+        static::assertSame('/spa', $this->rendered?->getUri()->getPath());
     }
 
     #[Test]
@@ -151,6 +199,21 @@ final class InspectMiddlewareTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('pathProvider')]
+    public function rendersAPageDispatchedWithoutRoutingAtThePathTheCmsPosted(mixed $path, string $expected): void
+    {
+        $this->middleware()->process(
+            $this->posted(self::token('site.page.resource'))->withParsedBody([
+                'contenir_preview'            => self::token('site.page.resource'),
+                InspectMiddleware::PATH_FIELD => $path,
+            ]),
+            $this->site('<html></html>'),
+        );
+
+        static::assertSame($expected, $this->rendered?->getUri()->getPath());
+    }
+
+    #[Test]
     public function rendersTheRecordsPageAsAPreviewDoes(): void
     {
         $this->middleware()->process($this->posted(self::token()), $this->site('<html></html>'));
@@ -190,7 +253,7 @@ final class InspectMiddlewareTest extends TestCase
         );
     }
 
-    private function middleware(): InspectMiddleware
+    private function middleware(?string $robots = null): InspectMiddleware
     {
         $clock  = new FixedClock();
         $router = $this->createStub(RouterInterface::class);
@@ -203,12 +266,16 @@ final class InspectMiddlewareTest extends TestCase
         return new InspectMiddleware(
             new PreviewEntry(
                 new TokenVerifier(self::config(), $clock, new InMemoryReplayGuard($clock)),
-                new ResolverRegistry(['site.page.home' => new PathResolver()]),
+                new ResolverRegistry([
+                    'site.page.home'     => new PathResolver(),
+                    'site.page.resource' => new HandlerResolver(),
+                ]),
                 new PreviewContext(),
             ),
             new TargetMatcher($router),
             new ResponseFactory(),
             new StreamFactory(),
+            new RobotsHeader($robots),
         );
     }
 

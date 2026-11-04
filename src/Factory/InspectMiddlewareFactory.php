@@ -8,6 +8,7 @@ use Contenir\Preview\Mezzio\TargetMatcher;
 use Contenir\Preview\PreviewEntry;
 use Contenir\Seo\Mezzio\Exception\InvalidServiceException;
 use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
+use Contenir\Seo\Mezzio\SeoMiddleware;
 use Mezzio\Router\RouterInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -27,6 +28,7 @@ final class InspectMiddlewareFactory
             new TargetMatcher(Services::get($container, RouterInterface::class, RouterInterface::class)),
             Services::get($container, ResponseFactoryInterface::class, ResponseFactoryInterface::class),
             Services::get($container, StreamFactoryInterface::class, StreamFactoryInterface::class),
+            Services::get($container, SeoMiddleware::class, SeoMiddleware::class),
         );
     }
 }
