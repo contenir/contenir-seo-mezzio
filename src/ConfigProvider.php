@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Contenir\Seo\Mezzio;
 
+use Contenir\Resource\Core\Metadata\ImageSizeResolverInterface;
+use Contenir\Resource\Core\Metadata\ImageUrlResolverInterface;
 use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
+use Contenir\Resource\Core\Metadata\PathImageUrlResolver;
 use Contenir\Seo\JsonLd\Graph;
 use Contenir\Seo\Mezzio\Factory\InspectMiddlewareFactory;
 use Contenir\Seo\Mezzio\Factory\JsonLdHelperFactory;
@@ -13,6 +16,8 @@ use Contenir\Seo\Mezzio\Factory\SeoConfigFactory;
 use Contenir\Seo\Mezzio\Factory\SeoHeadFactory;
 use Contenir\Seo\Mezzio\Factory\SeoHelperFactory;
 use Contenir\Seo\Mezzio\Factory\SeoMiddlewareFactory;
+use Contenir\Seo\Mezzio\Factory\ShareImageSizesFactory;
+use Contenir\Seo\Mezzio\Factory\ShareImageUrlsDelegator;
 use Contenir\Seo\Mezzio\Factory\SitemapResponsesFactory;
 use Contenir\Seo\Mezzio\Factory\WorkflowNavigationPagesFactory;
 use Contenir\Seo\Mezzio\Inspect\InspectMiddleware;
@@ -34,6 +39,7 @@ final class ConfigProvider
      * @return array{
      *     invokables: array<class-string, class-string>,
      *     factories: array<class-string, class-string>,
+     *     delegators: array<class-string, list<class-string>>,
      * }
      */
     public function getDependencies(): array
@@ -41,13 +47,19 @@ final class ConfigProvider
         return [
             'invokables' => [CurrentRequest::class => CurrentRequest::class, Graph::class => Graph::class],
             'factories'  => [
-                InspectMiddleware::class       => InspectMiddlewareFactory::class,
-                PageDefaultsInterface::class   => SectionPageDefaultsFactory::class,
-                SeoConfig::class               => SeoConfigFactory::class,
-                SeoHead::class                 => SeoHeadFactory::class,
-                SeoMiddleware::class           => SeoMiddlewareFactory::class,
-                SitemapResponses::class        => SitemapResponsesFactory::class,
-                WorkflowNavigationPages::class => WorkflowNavigationPagesFactory::class,
+                ImageSizeResolverInterface::class => ShareImageSizesFactory::class,
+                InspectMiddleware::class          => InspectMiddlewareFactory::class,
+                PageDefaultsInterface::class      => SectionPageDefaultsFactory::class,
+                SeoConfig::class                  => SeoConfigFactory::class,
+                SeoHead::class                    => SeoHeadFactory::class,
+                SeoMiddleware::class              => SeoMiddlewareFactory::class,
+                SitemapResponses::class           => SitemapResponsesFactory::class,
+                WorkflowNavigationPages::class    => WorkflowNavigationPagesFactory::class,
+            ],
+            'delegators' => [
+                // contenir-resource aliases the interface to this, and a delegator goes by the real name
+                PathImageUrlResolver::class      => [ShareImageUrlsDelegator::class],
+                ImageUrlResolverInterface::class => [ShareImageUrlsDelegator::class],
             ],
         ];
     }
@@ -70,7 +82,7 @@ final class ConfigProvider
     }
 
     /**
-     * @return array<string, array<string, array<string, string>>>
+     * @return array<string, array<string, array<string, string|list<string>>>>
      */
     public function __invoke(): array
     {

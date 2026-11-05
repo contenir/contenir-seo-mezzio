@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- A page's share image can be a share variant, so every page's image reaches sharing sites the same shape, whichever
+  field it came from. A site turns it on by declaring a `share` variant with a fixed width and height and `fit: cover` in
+  its storage config (1200×630 is what most sharing sites show), and names another with `share_variant`. A path on the
+  site of a kind that can be cropped goes through it, and its size comes from the variant. A site without one keeps its
+  original images, as does an image on another site. Requires contenir/contenir-asset-mezzio.
+
 ## [0.9.0] - 2026-11-05
 
 ### Added
