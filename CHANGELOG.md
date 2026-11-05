@@ -4,7 +4,12 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.10.1] - 2026-11-05
+
+### Added
+
+- A `<seo>` block's role can read a linked record's column, as `<image>assets[type=hero].path, assets[type=thumbnail].path</image>`,
+  or `hero.path` for a relation to one record. The relation goes by the entity's property, and the columns by their names.
 
 ## [0.10.0] - 2026-11-05
 
