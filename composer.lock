@@ -4,8 +4,146 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "236a564aab0d82d4b541a420458f3f5a",
+    "content-hash": "589b955343b7b91e8233613d58ce8262",
     "packages": [
+        {
+            "name": "contenir/contenir-asset",
+            "version": "v2.0.0-RC2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-asset.git",
+                "reference": "1d20bd1b6eba16a4b6732bf1c2d079cd7c7a8700"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-asset/zipball/1d20bd1b6eba16a4b6732bf1c2d079cd7c7a8700",
+                "reference": "1d20bd1b6eba16a4b6732bf1c2d079cd7c7a8700",
+                "shasum": ""
+            },
+            "require": {
+                "contenir/contenir-db-model": "^2.0@RC",
+                "laminas/laminas-escaper": "^2.13",
+                "laminas/laminas-permissions-acl": "^2.16",
+                "laminas/laminas-servicemanager": "^3.22 || ^4.0",
+                "laminas/laminas-view": "^2.35",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/container": "^1.1 || ^2.0",
+                "psr/log": "^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
+                "php-db/phpdb-sqlite": "^0.2.0",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "suggest": {
+                "ext-intl": "Transliterates accented characters in stored asset file names"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "component": "Contenir\\Asset",
+                    "config-provider": "Contenir\\Asset\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Asset\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Asset records, storage, image derivatives and view helpers for laminas-mvc and Mezzio, on contenir-db-model",
+            "homepage": "https://contenir.com.au",
+            "keywords": [
+                "asset",
+                "contenir",
+                "image",
+                "laminas",
+                "mezzio"
+            ],
+            "support": {
+                "docs": "https://github.com/contenir/contenir-asset/tree/main/docs",
+                "issues": "https://github.com/contenir/contenir-asset/issues",
+                "source": "https://github.com/contenir/contenir-asset"
+            },
+            "time": "2026-10-23T01:28:54+00:00"
+        },
+        {
+            "name": "contenir/contenir-asset-mezzio",
+            "version": "v2.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-asset-mezzio.git",
+                "reference": "9ca5f64e227ae568087dbf9b743028d497bc247f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-asset-mezzio/zipball/9ca5f64e227ae568087dbf9b743028d497bc247f",
+                "reference": "9ca5f64e227ae568087dbf9b743028d497bc247f",
+                "shasum": ""
+            },
+            "require": {
+                "contenir/contenir-asset": "^2.0.0-RC2@RC",
+                "contenir/contenir-storage": "^2.4",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/container": "^1.1 || ^2.0",
+                "psr/http-factory": "^1.0.2",
+                "psr/http-message": "^1.1 || ^2.0",
+                "psr/http-server-handler": "^1.0.2",
+                "psr/log": "^1.1 || ^2.0 || ^3.0",
+                "symfony/console": "^6.4.10 || ^7.1.3"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
+                "laminas/laminas-diactoros": "^3.3",
+                "laminas/laminas-servicemanager": "^3.22",
+                "laminas/laminas-view": "^2.33",
+                "mezzio/mezzio": "^3.18",
+                "mezzio/mezzio-fastroute": "^3.11",
+                "phpunit/phpunit": "^11.5.42",
+                "symfony/string": "^6.4.10 || ^7.1.3"
+            },
+            "suggest": {
+                "laminas/laminas-cli": "To run the storage:variants command as vendor/bin/laminas storage:variants.",
+                "laminas/laminas-diactoros": "Or any other PSR-7/PSR-17 implementation registered under the PSR-17 factory interfaces.",
+                "mezzio/mezzio-laminasviewrenderer": "To call the view services as storageSrcSet(), storageSizes(), storageSources() and storageUrl() in laminas-view templates."
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "config-provider": "Contenir\\Asset\\Mezzio\\ConfigProvider"
+                },
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Asset\\Mezzio\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Mezzio adapter for Contenir assets — keyed, profile-driven responsive image variants (incl. WebP/AVIF) backed by contenir/contenir-storage.",
+            "keywords": [
+                "contenir",
+                "mezzio",
+                "psr-15",
+                "responsive-images",
+                "srcset"
+            ],
+            "support": {
+                "issues": "https://github.com/contenir/contenir-asset-mezzio/issues",
+                "source": "https://github.com/contenir/contenir-asset-mezzio/tree/v2.3.2"
+            },
+            "time": "2026-10-31T04:41:04+00:00"
+        },
         {
             "name": "contenir/contenir-contact",
             "version": "v0.1.1",
@@ -504,6 +642,62 @@
                 "source": "https://github.com/contenir/contenir-site-token/tree/v0.1.0"
             },
             "time": "2026-10-27T00:37:03+00:00"
+        },
+        {
+            "name": "contenir/contenir-storage",
+            "version": "v2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-storage.git",
+                "reference": "322484f21df3b5894fd3cf38f508eaf41822828e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-storage/zipball/322484f21df3b5894fd3cf38f508eaf41822828e",
+                "reference": "322484f21df3b5894fd3cf38f508eaf41822828e",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "^3.29",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/log": "^1.1 || ^2.0 || ^3.0"
+            },
+            "replace": {
+                "contenir/storage": "self.version"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
+                "league/flysystem-aws-s3-v3": "^3.29",
+                "league/flysystem-memory": "^3.29",
+                "league/mime-type-detection": "^1.16",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "suggest": {
+                "ext-imagick": "Preferred by ImageResizer for variant generation; the magick/convert CLI is used otherwise.",
+                "league/flysystem-aws-s3-v3": "Required by StorageConfig to build s3 and cloudflare-images backends."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Storage\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Framework-agnostic asset storage for Contenir CMS — local, S3-compatible, and Cloudflare Images adapters with a shared variant pipeline.",
+            "support": {
+                "issues": "https://github.com/contenir/contenir-storage/issues",
+                "source": "https://github.com/contenir/contenir-storage/tree/v2.4.0"
+            },
+            "time": "2026-10-23T03:05:06+00:00"
         },
         {
             "name": "contenir/contenir-workflow-mezzio",
@@ -1094,6 +1288,132 @@
             "time": "2026-09-21T10:14:52+00:00"
         },
         {
+            "name": "laminas/laminas-json",
+            "version": "3.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-json.git",
+                "reference": "5448d357c4520d79f5caf4d46a1fe03ec8b8e4b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-json/zipball/5448d357c4520d79f5caf4d46a1fe03ec8b8e4b0",
+                "reference": "5448d357c4520d79f5caf4d46a1fe03ec8b8e4b0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1.0"
+            },
+            "conflict": {
+                "zendframework/zend-json": "*"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~2.4.0",
+                "laminas/laminas-stdlib": "^2.7.7 || ^3.19",
+                "phpunit/phpunit": "^9.5.25"
+            },
+            "suggest": {
+                "laminas/laminas-json-server": "For implementing JSON-RPC servers",
+                "laminas/laminas-xml2json": "For converting XML documents to JSON"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Json\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "provides convenience methods for serializing native PHP to JSON and decoding JSON to native PHP",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "json",
+                "laminas"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-json/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-json/issues",
+                "rss": "https://github.com/laminas/laminas-json/releases.atom",
+                "source": "https://github.com/laminas/laminas-json"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "abandoned": true,
+            "time": "2026-01-23T11:10:11+00:00"
+        },
+        {
+            "name": "laminas/laminas-permissions-acl",
+            "version": "2.18.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-permissions-acl.git",
+                "reference": "5940f6e7b9e2e3eba671f13dd26e610d2fe9acc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-permissions-acl/zipball/5940f6e7b9e2e3eba671f13dd26e610d2fe9acc3",
+                "reference": "5940f6e7b9e2e3eba671f13dd26e610d2fe9acc3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "conflict": {
+                "laminas/laminas-servicemanager": "<3.0",
+                "zendframework/zend-permissions-acl": "*"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "^3.0.1",
+                "laminas/laminas-servicemanager": "^3.21",
+                "phpbench/phpbench": "^1.2.10",
+                "phpunit/phpunit": "^10.5.58",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "vimeo/psalm": "^6.13.1"
+            },
+            "suggest": {
+                "laminas/laminas-servicemanager": "To support Laminas\\Permissions\\Acl\\Assertion\\AssertionManager plugin manager usage"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Permissions\\Acl\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Provides a lightweight and flexible access control list (ACL) implementation for privileges management",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "acl",
+                "laminas"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-permissions-acl/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-permissions-acl/issues",
+                "rss": "https://github.com/laminas/laminas-permissions-acl/releases.atom",
+                "source": "https://github.com/laminas/laminas-permissions-acl"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2025-11-03T09:15:20+00:00"
+        },
+        {
             "name": "laminas/laminas-servicemanager",
             "version": "3.24.0",
             "source": {
@@ -1319,6 +1639,296 @@
                 }
             ],
             "time": "2026-05-03T18:04:42+00:00"
+        },
+        {
+            "name": "laminas/laminas-view",
+            "version": "2.44.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-view.git",
+                "reference": "93f5c8b52af2603f1aa494f1c98ce2013baff18e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-view/zipball/93f5c8b52af2603f1aa494f1c98ce2013baff18e",
+                "reference": "93f5c8b52af2603f1aa494f1c98ce2013baff18e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-filter": "*",
+                "ext-json": "*",
+                "laminas/laminas-escaper": "^2.5",
+                "laminas/laminas-eventmanager": "^3.4",
+                "laminas/laminas-json": "^3.3",
+                "laminas/laminas-servicemanager": "^3.21.0",
+                "laminas/laminas-stdlib": "^3.10.1",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/container": "^1 || ^2"
+            },
+            "conflict": {
+                "amphp/dns": "<2.1.2",
+                "amphp/socket": "<2.3.1",
+                "container-interop/container-interop": "<1.2",
+                "laminas/laminas-router": "<3.0.1",
+                "laminas/laminas-session": "<2.12",
+                "zendframework/zend-view": "*"
+            },
+            "require-dev": {
+                "laminas/laminas-authentication": "^2.18",
+                "laminas/laminas-coding-standard": "~3.1.0",
+                "laminas/laminas-feed": "^2.25.0",
+                "laminas/laminas-filter": "^2.41",
+                "laminas/laminas-http": "^2.22",
+                "laminas/laminas-i18n": "^2.30.0",
+                "laminas/laminas-modulemanager": "^2.18",
+                "laminas/laminas-mvc": "^3.8.0",
+                "laminas/laminas-mvc-i18n": "^1.9",
+                "laminas/laminas-mvc-plugin-flashmessenger": "^1.11.0",
+                "laminas/laminas-navigation": "^2.21.0",
+                "laminas/laminas-paginator": "^2.20.0",
+                "laminas/laminas-permissions-acl": "^2.17",
+                "laminas/laminas-router": "^3.14.0",
+                "laminas/laminas-uri": "^2.13",
+                "phpunit/phpunit": "^10.5.58",
+                "psalm/plugin-phpunit": "^0.19.5",
+                "vimeo/psalm": "^6.13.1"
+            },
+            "suggest": {
+                "laminas/laminas-authentication": "Laminas\\Authentication component",
+                "laminas/laminas-feed": "Laminas\\Feed component",
+                "laminas/laminas-filter": "Laminas\\Filter component",
+                "laminas/laminas-http": "Laminas\\Http component",
+                "laminas/laminas-i18n": "Laminas\\I18n component",
+                "laminas/laminas-mvc": "Laminas\\Mvc component",
+                "laminas/laminas-mvc-plugin-flashmessenger": "laminas-mvc-plugin-flashmessenger component, if you want to use the FlashMessenger view helper with laminas-mvc versions 3 and up",
+                "laminas/laminas-navigation": "Laminas\\Navigation component",
+                "laminas/laminas-paginator": "Laminas\\Paginator component",
+                "laminas/laminas-permissions-acl": "Laminas\\Permissions\\Acl component",
+                "laminas/laminas-uri": "Laminas\\Uri component"
+            },
+            "bin": [
+                "bin/templatemap_generator.php"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\View\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Flexible view layer supporting and providing multiple view layers, helpers, and more",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "laminas",
+                "view"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-view/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-view/issues",
+                "rss": "https://github.com/laminas/laminas-view/releases.atom",
+                "source": "https://github.com/laminas/laminas-view"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2025-11-17T01:59:08+00:00"
+        },
+        {
+            "name": "league/flysystem",
+            "version": "3.36.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/flysystem.git",
+                "reference": "f7fb152932f30072d573510cbd4dd657d6475b25"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f7fb152932f30072d573510cbd4dd657d6475b25",
+                "reference": "f7fb152932f30072d573510cbd4dd657d6475b25",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem-local": "^3.0.0",
+                "league/mime-type-detection": "^1.0.0",
+                "php": "^8.0.2"
+            },
+            "conflict": {
+                "async-aws/core": "<1.19.0",
+                "async-aws/s3": "<1.14.0",
+                "aws/aws-sdk-php": "3.209.31 || 3.210.0",
+                "guzzlehttp/guzzle": "<7.0",
+                "guzzlehttp/ringphp": "<1.1.1",
+                "phpseclib/phpseclib": "3.0.15",
+                "symfony/http-client": "<5.2"
+            },
+            "require-dev": {
+                "async-aws/s3": "^1.5 || ^2.0",
+                "async-aws/simple-s3": "^1.1 || ^2.0",
+                "aws/aws-sdk-php": "^3.295.10",
+                "composer/semver": "^3.0",
+                "ext-fileinfo": "*",
+                "ext-ftp": "*",
+                "ext-mongodb": "^1.3|^2",
+                "ext-zip": "*",
+                "friendsofphp/php-cs-fixer": "^3.5",
+                "google/cloud-storage": "^1.23",
+                "guzzlehttp/psr7": "^2.6",
+                "microsoft/azure-storage-blob": "^1.1",
+                "mongodb/mongodb": "^1.2|^2",
+                "phpseclib/phpseclib": "^3.0.36",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.5.11|^10.0",
+                "sabre/dav": "^4.6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\Flysystem\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frankdejonge.nl"
+                }
+            ],
+            "description": "File storage abstraction for PHP",
+            "keywords": [
+                "WebDAV",
+                "aws",
+                "cloud",
+                "file",
+                "files",
+                "filesystem",
+                "filesystems",
+                "ftp",
+                "s3",
+                "sftp",
+                "storage"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/flysystem/issues",
+                "source": "https://github.com/thephpleague/flysystem/tree/3.36.0"
+            },
+            "time": "2026-09-02T08:00:27+00:00"
+        },
+        {
+            "name": "league/flysystem-local",
+            "version": "3.35.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/flysystem-local.git",
+                "reference": "a099b24dce160f3b2239043d13d47c4a1a214ea4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/a099b24dce160f3b2239043d13d47c4a1a214ea4",
+                "reference": "a099b24dce160f3b2239043d13d47c4a1a214ea4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "league/flysystem": "^3.0.0",
+                "league/mime-type-detection": "^1.0.0",
+                "php": "^8.0.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\Flysystem\\Local\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frankdejonge.nl"
+                }
+            ],
+            "description": "Local filesystem adapter for Flysystem.",
+            "keywords": [
+                "Flysystem",
+                "file",
+                "files",
+                "filesystem",
+                "local"
+            ],
+            "support": {
+                "source": "https://github.com/thephpleague/flysystem-local/tree/3.35.3"
+            },
+            "time": "2026-08-12T13:29:21+00:00"
+        },
+        {
+            "name": "league/mime-type-detection",
+            "version": "1.17.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/mime-type-detection.git",
+                "reference": "f5f47eff7c48ed1003069a2ca67f316fb4021c76"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/f5f47eff7c48ed1003069a2ca67f316fb4021c76",
+                "reference": "f5f47eff7c48ed1003069a2ca67f316fb4021c76",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.2",
+                "phpstan/phpstan": "^0.12.68",
+                "phpunit/phpunit": "^8.5.8 || ^9.3 || ^10.0 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\MimeTypeDetection\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frankdejonge.nl"
+                }
+            ],
+            "description": "Mime-type detection for Flysystem",
+            "support": {
+                "issues": "https://github.com/thephpleague/mime-type-detection/issues",
+                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.17.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/frankdejonge",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/league/flysystem",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-07-09T11:49:27+00:00"
         },
         {
             "name": "mezzio/mezzio",
@@ -2070,6 +2680,56 @@
             "time": "2023-04-11T06:14:47+00:00"
         },
         {
+            "name": "psr/log",
+            "version": "3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/3.0.2"
+            },
+            "time": "2024-09-11T13:17:53+00:00"
+        },
+        {
             "name": "psr/simple-cache",
             "version": "1.0.1",
             "source": {
@@ -2220,16 +2880,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.7.1",
+            "version": "v3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d"
+                "reference": "feb1edf4e546af3b85c5caebe8359a20db230ca3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/f3202fa1b5097b0af062dc978b32ecf63404e31d",
-                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/feb1edf4e546af3b85c5caebe8359a20db230ca3",
+                "reference": "feb1edf4e546af3b85c5caebe8359a20db230ca3",
                 "shasum": ""
             },
             "require": {
@@ -2242,7 +2902,7 @@
                     "name": "symfony/contracts"
                 },
                 "branch-alias": {
-                    "dev-main": "3.7-dev"
+                    "dev-main": "3.8-dev"
                 }
             },
             "autoload": {
@@ -2267,7 +2927,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.7.1"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.8.1"
             },
             "funding": [
                 {
@@ -2287,7 +2947,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-09-16T14:15:10+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -2541,16 +3201,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.43.0",
+            "version": "v1.43.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "4d5d331bf731e0aedbc6b2f5e61135b7b7996a72"
+                "reference": "122889ed24dc000165bcbfd77ec412f15cbdfc6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/4d5d331bf731e0aedbc6b2f5e61135b7b7996a72",
-                "reference": "4d5d331bf731e0aedbc6b2f5e61135b7b7996a72",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/122889ed24dc000165bcbfd77ec412f15cbdfc6a",
+                "reference": "122889ed24dc000165bcbfd77ec412f15cbdfc6a",
                 "shasum": ""
             },
             "require": {
@@ -2602,7 +3262,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.43.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.43.3"
             },
             "funding": [
                 {
@@ -2622,7 +3282,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-24T15:19:04+00:00"
+            "time": "2026-10-28T09:35:49+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -3633,170 +4293,6 @@
             "time": "2026-09-30T07:42:28+00:00"
         },
         {
-            "name": "laminas/laminas-json",
-            "version": "3.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-json.git",
-                "reference": "5448d357c4520d79f5caf4d46a1fe03ec8b8e4b0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-json/zipball/5448d357c4520d79f5caf4d46a1fe03ec8b8e4b0",
-                "reference": "5448d357c4520d79f5caf4d46a1fe03ec8b8e4b0",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^8.1.0"
-            },
-            "conflict": {
-                "zendframework/zend-json": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-coding-standard": "~2.4.0",
-                "laminas/laminas-stdlib": "^2.7.7 || ^3.19",
-                "phpunit/phpunit": "^9.5.25"
-            },
-            "suggest": {
-                "laminas/laminas-json-server": "For implementing JSON-RPC servers",
-                "laminas/laminas-xml2json": "For converting XML documents to JSON"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Json\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "provides convenience methods for serializing native PHP to JSON and decoding JSON to native PHP",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "json",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-json/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-json/issues",
-                "rss": "https://github.com/laminas/laminas-json/releases.atom",
-                "source": "https://github.com/laminas/laminas-json"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "abandoned": true,
-            "time": "2026-01-23T11:10:11+00:00"
-        },
-        {
-            "name": "laminas/laminas-view",
-            "version": "2.44.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-view.git",
-                "reference": "93f5c8b52af2603f1aa494f1c98ce2013baff18e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-view/zipball/93f5c8b52af2603f1aa494f1c98ce2013baff18e",
-                "reference": "93f5c8b52af2603f1aa494f1c98ce2013baff18e",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-filter": "*",
-                "ext-json": "*",
-                "laminas/laminas-escaper": "^2.5",
-                "laminas/laminas-eventmanager": "^3.4",
-                "laminas/laminas-json": "^3.3",
-                "laminas/laminas-servicemanager": "^3.21.0",
-                "laminas/laminas-stdlib": "^3.10.1",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
-                "psr/container": "^1 || ^2"
-            },
-            "conflict": {
-                "amphp/dns": "<2.1.2",
-                "amphp/socket": "<2.3.1",
-                "container-interop/container-interop": "<1.2",
-                "laminas/laminas-router": "<3.0.1",
-                "laminas/laminas-session": "<2.12",
-                "zendframework/zend-view": "*"
-            },
-            "require-dev": {
-                "laminas/laminas-authentication": "^2.18",
-                "laminas/laminas-coding-standard": "~3.1.0",
-                "laminas/laminas-feed": "^2.25.0",
-                "laminas/laminas-filter": "^2.41",
-                "laminas/laminas-http": "^2.22",
-                "laminas/laminas-i18n": "^2.30.0",
-                "laminas/laminas-modulemanager": "^2.18",
-                "laminas/laminas-mvc": "^3.8.0",
-                "laminas/laminas-mvc-i18n": "^1.9",
-                "laminas/laminas-mvc-plugin-flashmessenger": "^1.11.0",
-                "laminas/laminas-navigation": "^2.21.0",
-                "laminas/laminas-paginator": "^2.20.0",
-                "laminas/laminas-permissions-acl": "^2.17",
-                "laminas/laminas-router": "^3.14.0",
-                "laminas/laminas-uri": "^2.13",
-                "phpunit/phpunit": "^10.5.58",
-                "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.13.1"
-            },
-            "suggest": {
-                "laminas/laminas-authentication": "Laminas\\Authentication component",
-                "laminas/laminas-feed": "Laminas\\Feed component",
-                "laminas/laminas-filter": "Laminas\\Filter component",
-                "laminas/laminas-http": "Laminas\\Http component",
-                "laminas/laminas-i18n": "Laminas\\I18n component",
-                "laminas/laminas-mvc": "Laminas\\Mvc component",
-                "laminas/laminas-mvc-plugin-flashmessenger": "laminas-mvc-plugin-flashmessenger component, if you want to use the FlashMessenger view helper with laminas-mvc versions 3 and up",
-                "laminas/laminas-navigation": "Laminas\\Navigation component",
-                "laminas/laminas-paginator": "Laminas\\Paginator component",
-                "laminas/laminas-permissions-acl": "Laminas\\Permissions\\Acl component",
-                "laminas/laminas-uri": "Laminas\\Uri component"
-            },
-            "bin": [
-                "bin/templatemap_generator.php"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\View\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Flexible view layer supporting and providing multiple view layers, helpers, and more",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "laminas",
-                "view"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-view/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-view/issues",
-                "rss": "https://github.com/laminas/laminas-view/releases.atom",
-                "source": "https://github.com/laminas/laminas-view"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "time": "2025-11-17T01:59:08+00:00"
-        },
-        {
             "name": "marc-mabe/php-enum",
             "version": "v4.7.2",
             "source": {
@@ -4622,56 +5118,6 @@
                 }
             ],
             "time": "2026-10-05T05:47:54+00:00"
-        },
-        {
-            "name": "psr/log",
-            "version": "3.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
-                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.0.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Log\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "https://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for logging libraries",
-            "homepage": "https://github.com/php-fig/log",
-            "keywords": [
-                "log",
-                "psr",
-                "psr-3"
-            ],
-            "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.2"
-            },
-            "time": "2024-09-11T13:17:53+00:00"
         },
         {
             "name": "sanmai/di-container",
@@ -5986,16 +6432,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v7.4.21",
+            "version": "v7.4.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "fd0e3462be6d32a0d130e8423e4940a7688162d8"
+                "reference": "53d609da66578dad5a39fe290e8f924ec8f05e93"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/fd0e3462be6d32a0d130e8423e4940a7688162d8",
-                "reference": "fd0e3462be6d32a0d130e8423e4940a7688162d8",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/53d609da66578dad5a39fe290e8f924ec8f05e93",
+                "reference": "53d609da66578dad5a39fe290e8f924ec8f05e93",
                 "shasum": ""
             },
             "require": {
@@ -6032,7 +6478,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v7.4.21"
+                "source": "https://github.com/symfony/filesystem/tree/v7.4.23"
             },
             "funding": [
                 {
@@ -6052,7 +6498,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-06T20:05:19+00:00"
+            "time": "2026-11-04T08:27:22+00:00"
         },
         {
             "name": "symfony/finder",
@@ -6204,16 +6650,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v7.4.21",
+            "version": "v7.4.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "e5247f4a5e0797d232ad8e8e6803aeb341843c83"
+                "reference": "a5a6912edbbfc4c98cd080bc4bbe37c8e7eeb20a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/e5247f4a5e0797d232ad8e8e6803aeb341843c83",
-                "reference": "e5247f4a5e0797d232ad8e8e6803aeb341843c83",
+                "url": "https://api.github.com/repos/symfony/process/zipball/a5a6912edbbfc4c98cd080bc4bbe37c8e7eeb20a",
+                "reference": "a5a6912edbbfc4c98cd080bc4bbe37c8e7eeb20a",
                 "shasum": ""
             },
             "require": {
@@ -6245,7 +6691,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v7.4.21"
+                "source": "https://github.com/symfony/process/tree/v7.4.22"
             },
             "funding": [
                 {
@@ -6265,7 +6711,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-08T16:56:12+00:00"
+            "time": "2026-10-25T14:40:16+00:00"
         },
         {
             "name": "thecodingmachine/safe",

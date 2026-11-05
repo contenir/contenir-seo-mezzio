@@ -18,6 +18,7 @@
   },
   "require": {
     "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+    "contenir/contenir-asset-mezzio": "^2.3",
     "contenir/contenir-db-model": "^2.0.0-rc6",
     "contenir/contenir-preview": "^0.3",
     "contenir/contenir-preview-mezzio": "^0.1",
