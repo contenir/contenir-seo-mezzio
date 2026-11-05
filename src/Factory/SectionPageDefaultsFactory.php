@@ -9,6 +9,8 @@ use Contenir\Db\Model\RowValues;
 use Contenir\Seo\Mezzio\Exception\InvalidServiceException;
 use Contenir\Seo\Mezzio\Sections\SectionMapFile;
 use Contenir\Seo\Mezzio\Sections\SectionPageDefaults;
+use Contenir\Seo\Sections\SectionMap;
+use Contenir\Seo\SeoConfig;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -17,7 +19,8 @@ use Psr\Container\ContainerInterface;
  * contenir_seo.admin_xml, config/admin.xml by default, with the parsed map
  * kept in contenir_seo.section_map_cache,
  * data/cache/contenir-seo-section-map.cache by default; false keeps no
- * cache and reads the admin.xml every time. A site without the file maps nothing.
+ * cache and reads the admin.xml every time. A site without the file maps nothing,
+ * and neither does one whose records switch (SeoConfig::$records) is off.
  */
 final class SectionPageDefaultsFactory
 {
@@ -32,13 +35,10 @@ final class SectionPageDefaultsFactory
             ? null
             : $options->string('section_map_cache', 'data/cache/contenir-seo-section-map.cache');
         $rows = new RowValues(Services::get($container, EntityManager::class, EntityManager::class));
+        $map  = Services::get($container, SeoConfig::class, SeoConfig::class)->records
+            ? (new SectionMapFile($options->string('admin_xml', 'config/admin.xml'), $cache))->load()
+            : new SectionMap();
 
-        return new SectionPageDefaults(
-            (new SectionMapFile(
-                $options->string('admin_xml', 'config/admin.xml'),
-                $cache,
-            ))->load(),
-            $rows->of(...),
-        );
+        return new SectionPageDefaults($map, $rows->of(...));
     }
 }

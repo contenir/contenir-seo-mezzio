@@ -146,14 +146,15 @@ final readonly class SeoHead
 
     /**
      * The site's pages' names by address, for the breadcrumb trail, or none where the workflow
-     * navigation is not used or cannot be read: each step is then named from its path.
+     * navigation is not used or cannot be read, or the site's records switch is off: each step
+     * is then named from its path.
      *
      * @return ?array<string, string>
      */
     private function pages(): ?array
     {
         try {
-            return $this->navigation?->names();
+            return $this->config->records ? $this->navigation?->names() : null;
         } catch (CacheException|ContainerExceptionInterface|RouterException) {
             return null;
         }

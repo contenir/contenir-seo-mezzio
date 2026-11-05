@@ -289,6 +289,26 @@ final class SeoHeadTest extends TestCase
         );
     }
 
+    #[Test]
+    public function theTrailIsNamedFromThePathWhileTheRecordsSwitchIsOff(): void
+    {
+        $current = new CurrentRequest();
+        $current->set(new ServerRequest(uri: 'https://www.example.test/work/convoy'));
+        $head = new SeoHead(
+            SeoSettings::config(['extensions' => ['seo' => ['records' => '0']]]),
+            $current,
+            navigation: new WorkflowNavigationPages(
+                new FixedStrategy([['route' => 'work', 'label' => 'Our work']], ['work' => []]),
+                new RouteNameRouter(),
+            ),
+        );
+
+        static::assertSame(
+            ['Example', 'Work', 'Convoy'],
+            array_column($head->build('Convoy')->jsonLd[0]['itemListElement'] ?? [], 'name'),
+        );
+    }
+
     /**
      * @param list<string> $names
      */

@@ -58,6 +58,7 @@ final class ApplicationTest extends TestCase
         return [
             'from the site\'s records'        => [[], '/asset/about.jpg', 1],
             'left out when switched off'      => [['sitemap_images' => false], '/asset/about.jpg', 0],
+            'left out without the records'    => [['records' => false], '/asset/about.jpg', 0],
             'none without a resource manager' => [[], null, 0],
         ];
     }
@@ -70,6 +71,7 @@ final class ApplicationTest extends TestCase
         return [
             'from the navigation'                     => [[], 'About us'],
             'from the path when the sitemap skips it' => [['sitemap_navigation' => false], 'About'],
+            'from the path without the records'       => [['records' => false], 'About'],
         ];
     }
 
@@ -258,7 +260,7 @@ final class ApplicationTest extends TestCase
             'site'             => ['url' => 'https://www.example.test', 'title' => 'Example'],
             'extensions'       => ['seo' => ['visibility' => 'show']],
             'workflow_manager' => ['strategy' => ResourceStrategy::class],
-            'contenir_seo'     => ['extensions_config' => $this->directory, ...$options],
+            'contenir_seo'     => ['extensions_config' => $this->directory, 'records' => true, ...$options],
         ]);
         $container->setService(ResourceStrategy::class, new FixedStrategy(
             [
