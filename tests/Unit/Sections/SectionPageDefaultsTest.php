@@ -189,4 +189,41 @@ final class SectionPageDefaultsTest extends TestCase
 
         static::assertSame('/hero.jpg', self::linkedImage($resource, ['assets.path']));
     }
+
+    #[Test]
+    public function withTheRecordsSwitchOffARecordWithNoSeoColumnKeepsItsOwnTitleAndDescription(): void
+    {
+        $defaults = new SectionPageDefaults(
+            SectionMap::fromAdminXml(self::ADMIN),
+            static fn(): array => ['title' => 'House', 'abstract' => 'A house.', 'image_lg' => '/house.jpg'],
+            records: false,
+        );
+
+        static::assertEquals(
+            new PageDefaults('House', 'A house.'),
+            $defaults->for(self::resource('project')),
+        );
+    }
+
+    #[Test]
+    public function withTheRecordsSwitchOffOnlyTheTitleAndDescriptionAreGiven(): void
+    {
+        $defaults = new SectionPageDefaults(
+            SectionMap::fromAdminXml(self::ADMIN),
+            static fn(): array => [
+                'title'    => 'House',
+                'abstract' => 'A house.',
+                'image_lg' => '/house.jpg',
+                'caption'  => 'The house from the garden',
+                'seo'      => '{"canonical": "/work/house", "robots": "noindex, follow", "title": "Share",'
+                    . ' "description": "Shared.", "image": "/share.jpg", "image_alt": "Share alt"}',
+            ],
+            records: false,
+        );
+
+        static::assertEquals(
+            new PageDefaults('House', 'A house.', overrides: new PageOverrides('Share', 'Shared.')),
+            $defaults->for(self::resource('project')),
+        );
+    }
 }

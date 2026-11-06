@@ -9,10 +9,11 @@ adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - The master switch for what a site's `<seo>` blocks drive, `SeoConfig::$records`, read from `extensions.seo.records`
-  and, where the settings don't have it, from `contenir_seo.records`. It is off unless a site turns it on. While off:
-  `PageDefaultsInterface` gives no page defaults or per-record overrides (so no block-driven schema either), the
-  breadcrumb trail is named from its path, and the sitemap lists no share images. Where title and description come
-  from is not changed.
+  and, where the settings don't have it, from `contenir_seo.records`. It is off unless a site turns it on. While off,
+  `PageDefaultsInterface` still gives a record's title and description (from the block's columns and the record's own
+  advanced column), since where they come from is not gated, but gives no image, canonical address, robots or schema
+  (so no block-driven schema), nor overrides of them; the breadcrumb trail is named from its path, and the sitemap
+  lists no share images.
 
 ### Changed
 

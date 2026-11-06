@@ -50,6 +50,28 @@ final class SectionPageDefaultsFactoryTest extends TestCase
     }
 
     #[Test]
+    public function givesOnlyATitleAndDescriptionWhileTheRecordsSwitchIsOff(): void
+    {
+        file_put_contents($this->file, <<<'XML'
+            <admin><library><category><projects><section><article><extensions>
+                <seo type="project" schema="CreativeWork"><advanced>seo</advanced></seo>
+            </extensions></article></section></projects></category></library></admin>
+            XML);
+        $resource                 = new ProjectEntity();
+        $resource->resourceTypeId = 'project';
+        $resource->seo            = '{"title": "Own title", "description": "Own description", "robots": "noindex"}';
+
+        $defaults = (new SectionPageDefaultsFactory())($this->container($this->file, settings: [
+            'extensions' => ['seo' => ['records' => '0']],
+        ]))->for($resource);
+
+        static::assertSame(
+            ['Own title', 'Own description', null, null],
+            [$defaults?->overrides->title, $defaults?->overrides->description, $defaults?->robots, $defaults?->schema],
+        );
+    }
+
+    #[Test]
     public function keepsTheMapInTheConfiguredCacheFile(): void
     {
         file_put_contents($this->file, data: '<admin/>');
@@ -59,25 +81,6 @@ final class SectionPageDefaultsFactoryTest extends TestCase
         unlink($cache);
 
         static::assertTrue($kept);
-    }
-
-    #[Test]
-    public function mapsNothingWhileTheRecordsSwitchIsOff(): void
-    {
-        file_put_contents($this->file, <<<'XML'
-            <admin><library><category><projects><section><article><extensions>
-                <seo type="project"><advanced>seo</advanced></seo>
-            </extensions></article></section></projects></category></library></admin>
-            XML);
-        $resource                 = new ProjectEntity();
-        $resource->resourceTypeId = 'project';
-        $resource->metaTitle      = 'House';
-
-        static::assertNull(
-            (new SectionPageDefaultsFactory())($this->container($this->file, settings: [
-                'extensions' => ['seo' => ['records' => '0']],
-            ]))->for($resource),
-        );
     }
 
     #[Test]
