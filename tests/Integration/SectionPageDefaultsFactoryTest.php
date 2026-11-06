@@ -14,7 +14,12 @@ use Contenir\Seo\Mezzio\Tests\TestAsset\AssetEntity;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ProjectEntity;
 use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
 use Contenir\Seo\SeoConfig;
+use PDO;
+use PhpDb\Adapter\Adapter;
 use PhpDb\Adapter\AdapterInterface;
+use PhpDb\Sqlite\AdapterPlatform;
+use PhpDb\Sqlite\Pdo\Connection;
+use PhpDb\Sqlite\Pdo\Driver;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -43,12 +48,29 @@ final class SectionPageDefaultsFactoryTest extends TestCase
     #[Test]
     public function anAssetEntityLetsARecordsContentImageStandInForAShareImage(): void
     {
-        file_put_contents($this->file, data: '<admin/>');
-
-        static::assertInstanceOf(
-            SectionPageDefaults::class,
-            (new SectionPageDefaultsFactory())($this->container($this->file, assetEntity: AssetEntity::class)),
+        file_put_contents($this->file, <<<'XML'
+            <admin><library><category><projects><section><article><extensions>
+                <seo type="project"><image alt="caption">image_lg</image><advanced>seo</advanced></seo>
+            </extensions></article></section></projects></category></library></admin>
+            XML);
+        $pdo = new PDO('sqlite::memory:');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec('CREATE TABLE asset (asset_id INTEGER PRIMARY KEY, type TEXT, path TEXT, active TEXT)');
+        $pdo->exec(
+            "INSERT INTO asset (asset_id, type, path, active) VALUES (7, 'image', '/asset/seven.jpg', 'active')",
         );
+        $driver                   = new Driver(connection: new Connection($pdo));
+        $resource                 = new ProjectEntity();
+        $resource->resourceTypeId = 'project';
+        $resource->section        = '[{"type":"media","status":"1","fields":{"images":["7"]}}]';
+
+        $defaults = (new SectionPageDefaultsFactory())($this->container(
+            $this->file,
+            assetEntity: AssetEntity::class,
+            adapter: new Adapter($driver, new AdapterPlatform($driver)),
+        ))->for($resource);
+
+        static::assertSame('/asset/seven.jpg', $defaults?->image);
     }
 
     #[Test]
@@ -158,6 +180,7 @@ final class SectionPageDefaultsFactoryTest extends TestCase
         string|false $cache = false,
         array $settings = [],
         string $assetEntity = '',
+        ?AdapterInterface $adapter = null,
     ): ArrayContainer {
         return new ArrayContainer([
             'config'             => ['contenir_seo' => [
@@ -166,7 +189,7 @@ final class SectionPageDefaultsFactoryTest extends TestCase
                 'asset_entity'      => $assetEntity,
             ]],
             SeoConfig::class     => SeoSettings::config($settings),
-            EntityManager::class => new EntityManager($this->createStub(AdapterInterface::class)),
+            EntityManager::class => new EntityManager($adapter ?? $this->createStub(AdapterInterface::class)),
         ]);
     }
 }
