@@ -10,6 +10,7 @@ use Contenir\Resource\Core\Entity\AbstractResourceEntity;
 use Contenir\Resource\Core\Metadata\PageDefaults;
 use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
 use Contenir\Resource\Core\Metadata\PageOverrides;
+use Contenir\Seo\Sections\ContentBlocks;
 use Contenir\Seo\Sections\LinkedValue;
 use Contenir\Seo\Sections\SectionMap;
 use Override;
@@ -21,7 +22,7 @@ use function is_object;
  * A resource's page defaults from the <seo> block its type has in the site's
  * admin.xml, read from the resource's own columns and the records it links to,
  * with the record's own overrides from its advanced column, which win over the
- * page's. A resource whose type no block maps, or that isn't a resource entity,
+ * page's, and, where its columns give no description or image, its Section field's. A resource whose type no block maps, or that isn't a resource entity,
  * has none. A link whose relation the entity doesn't have gives no value. With the
  * records switch off, only the title, the description and the share image as the site stores it
  * are given, from the block's columns and the record's own advanced column; the image's
@@ -36,6 +37,7 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
         private SectionMap $map,
         private Closure $row,
         private bool $records = true,
+        private ?ContentImage $content = null,
     ) {}
 
     /**
@@ -59,7 +61,12 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
             return null;
         }
 
-        $page     = $block->page([...($this->row)($resource), ...$this->linked($resource, $block->linked())]);
+        $row  = ($this->row)($resource);
+        $page = $block->page([
+            ...$row,
+            ...$this->linked($resource, $block->linked()),
+            ...$this->contentImage($row),
+        ]);
         $defaults = new PageDefaults(
             title: $page->title,
             description: $page->description,
@@ -77,6 +84,21 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
         );
 
         return $this->records ? $defaults : self::headline($defaults);
+    }
+
+    /**
+     * The first image of the record's Section field, under the key the block reads it from, when the site can
+     * look its assets up.
+     *
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, string>
+     */
+    private function contentImage(array $row): array
+    {
+        $path = $this->content?->pathOf($row);
+
+        return null === $path ? [] : [ContentBlocks::IMAGE => $path];
     }
 
     /**

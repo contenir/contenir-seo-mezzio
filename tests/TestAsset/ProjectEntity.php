@@ -16,4 +16,7 @@ final class ProjectEntity extends AbstractResourceEntity
 {
     #[Column]
     public ?string $seo = null;
+
+    #[Column]
+    public ?string $section = null;
 }

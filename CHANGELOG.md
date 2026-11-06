@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.12.0] - 2026-11-06
+
+### Added
+
+- A record's page takes its description from the first text block of its Section field, and its share image from the
+  first image of its first media block, where the columns its `<seo>` block names give none, whether the records
+  switch is on or off. A site names the entity its assets are mapped with in `contenir_seo.asset_entity` to let a
+  record's Section images stand in for a share image. Requires `contenir-seo` ^0.9.
+
 ## [0.11.0] - 2026-11-06
 
 ### Added

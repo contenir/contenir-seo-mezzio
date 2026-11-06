@@ -6,6 +6,8 @@ namespace Contenir\Seo\Mezzio\Sections;
 
 use Contenir\Seo\Sections\SeoBlock;
 
+use function array_filter;
+use function array_values;
 use function is_array;
 use function is_string;
 
@@ -31,6 +33,10 @@ final class SeoBlockJson
             $roles,
             $required,
             is_string($block['advanced'] ?? null) ? $block['advanced'] : null,
+            false !== ($block['automatic'] ?? true),
+            is_array($block['content'] ?? null)
+                ? array_values(array_filter($block['content'], is_string(...)))
+                : SeoBlock::CONTENT_ROLES,
         );
     }
 }

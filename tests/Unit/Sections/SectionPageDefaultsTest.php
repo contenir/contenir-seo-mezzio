@@ -7,6 +7,7 @@ namespace Contenir\Seo\Mezzio\Tests\Unit\Sections;
 use Contenir\Metadata\MetadataInterface;
 use Contenir\Resource\Core\Metadata\PageDefaults;
 use Contenir\Resource\Core\Metadata\PageOverrides;
+use Contenir\Seo\Mezzio\Sections\ContentImage;
 use Contenir\Seo\Mezzio\Sections\SectionPageDefaults;
 use Contenir\Seo\Mezzio\Tests\TestAsset\LinkedProject;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ProjectEntity;
@@ -130,6 +131,23 @@ final class SectionPageDefaultsTest extends TestCase
     }
 
     #[Test]
+    public function aResourceTakesWhatItsSectionFieldGivesWhereItsColumnsGiveNothing(): void
+    {
+        $defaults = new SectionPageDefaults(
+            SectionMap::fromAdminXml(self::ADMIN),
+            static fn(): array => [
+                'title'   => 'House',
+                'section' => '[{"type":"text","status":"1","fields":{"description":"<p>From the content.</p>"}},'
+                    . '{"type":"media","status":"1","fields":{"images":["7"]}}]',
+            ],
+            content: new ContentImage(static fn(): array => ['7' => ['type' => 'image', 'path' => '/seven.jpg']]),
+        );
+        $page = $defaults->for(self::resource('project'));
+
+        static::assertSame(['<p>From the content.</p>', '/seven.jpg'], [$page?->description, $page?->image]);
+    }
+
+    #[Test]
     public function aResourceTakesWhatItsTypesBlockMakesOfItsColumns(): void
     {
         $defaults = new SectionPageDefaults(
@@ -171,6 +189,17 @@ final class SectionPageDefaultsTest extends TestCase
     }
 
     #[Test]
+    public function aSiteThatCannotLookItsAssetsUpTakesNoImageFromItsSectionField(): void
+    {
+        $defaults = new SectionPageDefaults(
+            SectionMap::fromAdminXml(self::ADMIN),
+            static fn(): array => ['section' => '[{"type":"media","fields":{"images":["7"]}}]'],
+        );
+
+        static::assertNull($defaults->for(self::resource('project'))?->image);
+    }
+
+    #[Test]
     public function metadataThatIsNotAResourceHasNone(): void
     {
         $defaults = new SectionPageDefaults(
@@ -179,6 +208,23 @@ final class SectionPageDefaultsTest extends TestCase
         );
 
         static::assertNull($defaults->for($this->createStub(MetadataInterface::class)));
+    }
+
+    #[Test]
+    public function theRecordsOwnColumnsComeBeforeItsSectionField(): void
+    {
+        $defaults = new SectionPageDefaults(
+            SectionMap::fromAdminXml(self::ADMIN),
+            static fn(): array => [
+                'abstract' => 'Own.',
+                'image_lg' => '/own.jpg',
+                'section'  => '[{"type":"text","fields":{"description":"Content"}},{"type":"media","fields":{"images":["7"]}}]',
+            ],
+            content: new ContentImage(static fn(): array => ['7' => ['path' => '/seven.jpg']]),
+        );
+        $page = $defaults->for(self::resource('project'));
+
+        static::assertSame(['Own.', '/own.jpg'], [$page?->description, $page?->image]);
     }
 
     #[Test]
