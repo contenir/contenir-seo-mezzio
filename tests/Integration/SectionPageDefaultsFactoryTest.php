@@ -8,7 +8,9 @@ use Contenir\Db\Model\EntityManager;
 use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
 use Contenir\Seo\Mezzio\ConfigProvider;
 use Contenir\Seo\Mezzio\Factory\SectionPageDefaultsFactory;
+use Contenir\Seo\Mezzio\Sections\SectionPageDefaults;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ArrayContainer;
+use Contenir\Seo\Mezzio\Tests\TestAsset\AssetEntity;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ProjectEntity;
 use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
 use Contenir\Seo\SeoConfig;
@@ -36,6 +38,31 @@ final class SectionPageDefaultsFactoryTest extends TestCase
         (new SectionPageDefaultsFactory())($this->container($this->file));
 
         static::assertSame([false, []], [is_file("{$this->file}.cache"), glob("{$this->file}*.tmp")]);
+    }
+
+    #[Test]
+    public function anAssetEntityLetsARecordsContentImageStandInForAShareImage(): void
+    {
+        file_put_contents($this->file, data: '<admin/>');
+
+        static::assertInstanceOf(
+            SectionPageDefaults::class,
+            (new SectionPageDefaultsFactory())($this->container($this->file, assetEntity: AssetEntity::class)),
+        );
+    }
+
+    #[Test]
+    public function anAssetEntityThatIsNotAClassIsLeftOut(): void
+    {
+        file_put_contents($this->file, data: '<admin/>');
+
+        static::assertInstanceOf(
+            SectionPageDefaults::class,
+            (new SectionPageDefaultsFactory())($this->container(
+                $this->file,
+                assetEntity: SectionPageDefaults::class . 'Missing',
+            )),
+        );
     }
 
     #[Test]
@@ -126,10 +153,18 @@ final class SectionPageDefaultsFactoryTest extends TestCase
     /**
      * @param array<array-key, mixed> $settings
      */
-    private function container(string $adminXml, string|false $cache = false, array $settings = []): ArrayContainer
-    {
+    private function container(
+        string $adminXml,
+        string|false $cache = false,
+        array $settings = [],
+        string $assetEntity = '',
+    ): ArrayContainer {
         return new ArrayContainer([
-            'config'             => ['contenir_seo' => ['admin_xml' => $adminXml, 'section_map_cache' => $cache]],
+            'config'             => ['contenir_seo' => [
+                'admin_xml'         => $adminXml,
+                'section_map_cache' => $cache,
+                'asset_entity'      => $assetEntity,
+            ]],
             SeoConfig::class     => SeoSettings::config($settings),
             EntityManager::class => new EntityManager($this->createStub(AdapterInterface::class)),
         ]);
