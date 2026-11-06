@@ -191,7 +191,7 @@ final class SectionPageDefaultsTest extends TestCase
     }
 
     #[Test]
-    public function withTheRecordsSwitchOffARecordWithNoSeoColumnKeepsItsOwnTitleAndDescription(): void
+    public function withTheRecordsSwitchOffARecordWithNoSeoColumnKeepsItsOwnTitleDescriptionAndImage(): void
     {
         $defaults = new SectionPageDefaults(
             SectionMap::fromAdminXml(self::ADMIN),
@@ -200,13 +200,13 @@ final class SectionPageDefaultsTest extends TestCase
         );
 
         static::assertEquals(
-            new PageDefaults('House', 'A house.'),
+            new PageDefaults('House', 'A house.', '/house.jpg'),
             $defaults->for(self::resource('project')),
         );
     }
 
     #[Test]
-    public function withTheRecordsSwitchOffOnlyTheTitleAndDescriptionAreGiven(): void
+    public function withTheRecordsSwitchOffOnlyTheTitleDescriptionAndPlainImageAreGiven(): void
     {
         $defaults = new SectionPageDefaults(
             SectionMap::fromAdminXml(self::ADMIN),
@@ -222,7 +222,7 @@ final class SectionPageDefaultsTest extends TestCase
         );
 
         static::assertEquals(
-            new PageDefaults('House', 'A house.', overrides: new PageOverrides('Share', 'Shared.')),
+            new PageDefaults('House', 'A house.', '/house.jpg', overrides: new PageOverrides('Share', 'Shared.')),
             $defaults->for(self::resource('project')),
         );
     }
