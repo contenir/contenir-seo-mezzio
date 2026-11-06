@@ -14,8 +14,11 @@ use Psr\Container\ContainerInterface;
 /**
  * Builds the site's SeoConfig from its settings (SiteSettings). Without the
  * SEO add-on enabled, only the core settings are read, so the site keeps
- * today's sitemap and robots.txt and nothing is hidden. contenir_seo in the
- * config can change where things are:
+ * today's sitemap and robots.txt and nothing is hidden. The master switch for
+ * what the <seo> blocks drive is extensions.seo.records in the settings, and
+ * contenir_seo.records in the config where the settings don't have it; it is
+ * off unless one turns it on. contenir_seo in the config can change where
+ * things are:
  *
  *     'contenir_seo' => [
  *         'extensions_config' => 'config/autoload', // where extensions.global.php and .local.php are
@@ -39,10 +42,13 @@ final class SeoConfigFactory
     {
         $options  = Options::fromContainer($container);
         $settings = SiteSettings::fromConfig($options->config);
+        $records  = $options->flag('records', false);
         $enabled  = EnabledAddOns::fromDirectory($options->string('extensions_config', self::EXTENSIONS_CONFIG));
 
         return (new ShareImageSize($options->string('public_path', self::PUBLIC_PATH)))->measure(
-            $enabled->has(self::HANDLE) ? SeoConfig::fromSettings($settings) : SeoConfig::fromCoreSettings($settings),
+            $enabled->has(self::HANDLE)
+                ? SeoConfig::fromSettings($settings, $records)
+                : SeoConfig::fromCoreSettings($settings, $records),
         );
     }
 }

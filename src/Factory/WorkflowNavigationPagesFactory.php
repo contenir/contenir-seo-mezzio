@@ -20,7 +20,8 @@ use Psr\Container\ContainerInterface;
  * Builds the workflow navigation's sitemap pages from the strategy that
  * workflow_manager.strategy names, as contenir-workflow-mezzio does, and the
  * Mezzio router. Where the site has contenir-resource's resource manager, each
- * page lists its record's share image, unless `sitemap_images` is false.
+ * page lists its record's share image, unless `sitemap_images` is false
+ * or the site's records switch (SeoConfig::$records) is off.
  *
  * @api
  */
@@ -40,6 +41,7 @@ final class WorkflowNavigationPagesFactory
             Services::get($container, RouterInterface::class, RouterInterface::class),
             Options::fromContainer($container)->flag('sitemap_images', true)
             && $container->has(ResourceManagerInterface::class)
+            && Services::get($container, SeoConfig::class, SeoConfig::class)->records
                 ? new PageImages(
                     Services::get($container, ResourceManagerInterface::class, ResourceManagerInterface::class),
                     Services::get($container, PageMetadataBuilder::class, PageMetadataBuilder::class),

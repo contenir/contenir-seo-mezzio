@@ -11,6 +11,7 @@ use Contenir\Resource\Core\Metadata\ImageSizeResolverInterface;
 use Contenir\Resource\Core\Metadata\ImageUrlResolverInterface;
 use Contenir\Resource\Core\Metadata\PathImageUrlResolver;
 use Contenir\Seo\Mezzio\ConfigProvider;
+use Contenir\Seo\SeoConfig;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -27,12 +28,15 @@ final class ShareImagesWiringTest extends TestCase
 {
     private const string ORIGIN = 'https://www.site.test';
 
+    private const array RECORDS = ['contenir_seo' => ['records' => true]];
+
     private const array SHARE = ['share' => ['width' => 1200, 'height' => 630, 'fit' => 'cover']];
 
     /**
      * @param array<string, mixed> $profiles
+     * @param array<string, mixed> $config
      */
-    private static function container(array $profiles): ServiceManager
+    private static function container(array $profiles, array $config = self::RECORDS): ServiceManager
     {
         $resource  = (new ResourceConfigProvider())->getDependencies();
         $container = new ServiceManager(array_merge_recursive(
@@ -46,7 +50,7 @@ final class ShareImagesWiringTest extends TestCase
                 ],
             ],
         ));
-        $container->setService('config', []);
+        $container->setService('config', $config);
         $container->setService(ProfileProviderService::class, new ProfileProviderService($profiles));
         $container->setService(AssetUrlBuilder::class, new AssetUrlBuilder('/asset/library'));
 
@@ -58,12 +62,12 @@ final class ShareImagesWiringTest extends TestCase
     {
         $site = new ServiceManager([
             'factories'  => [
-                ImageUrlResolverInterface::class =>
-                    static fn(): ImageUrlResolverInterface => new PathImageUrlResolver(),
+                ImageUrlResolverInterface::class => static fn(): ImageUrlResolverInterface => new PathImageUrlResolver(),
+                SeoConfig::class                 => (new ConfigProvider())->getDependencies()['factories'][SeoConfig::class],
             ],
             'delegators' => (new ConfigProvider())->getDependencies()['delegators'],
             'services'   => [
-                'config'                      => [],
+                'config'                      => self::RECORDS,
                 ProfileProviderService::class => new ProfileProviderService(self::SHARE),
                 AssetUrlBuilder::class        => new AssetUrlBuilder('/asset/library'),
             ],
@@ -87,6 +91,17 @@ final class ShareImagesWiringTest extends TestCase
     }
 
     #[Test]
+    public function aSiteWithTheRecordsSwitchOffSendsItsOriginalEvenWithTheVariant(): void
+    {
+        static::assertSame(
+            'https://www.site.test/asset/library/a.jpg',
+            self::container(self::SHARE, ['contenir_seo' => ['records' => false]])
+                ->get(ImageUrlResolverInterface::class)
+                ->resolve('/asset/library/a.jpg', self::ORIGIN),
+        );
+    }
+
+    #[Test]
     public function aSiteWithTheVariantSendsIt(): void
     {
         static::assertSame(
@@ -103,6 +118,16 @@ final class ShareImagesWiringTest extends TestCase
         static::assertSame(
             [1200, 630],
             self::container(self::SHARE)->get(ImageSizeResolverInterface::class)->size('/asset/library/a.jpg'),
+        );
+    }
+
+    #[Test]
+    public function withTheRecordsSwitchOffNoVariantSizeIsClaimed(): void
+    {
+        static::assertNull(
+            self::container(self::SHARE, ['contenir_seo' => ['records' => false]])
+                ->get(ImageSizeResolverInterface::class)
+                ->size('/asset/library/a.jpg'),
         );
     }
 }

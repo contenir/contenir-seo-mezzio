@@ -7,12 +7,14 @@ namespace Contenir\Seo\Mezzio\Factory;
 use Contenir\Asset\Mezzio\Service\AssetUrlBuilder;
 use Contenir\Resource\Core\Metadata\ImageUrlResolverInterface;
 use Contenir\Seo\Mezzio\Share\ShareImageUrls;
+use Contenir\Seo\SeoConfig;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
 /**
  * Wraps the site's image URLs with its share variant, when its storage config
- * declares one. A site that doesn't keeps its original images.
+ * declares one, while its records switch is on. A site that doesn't, or has it off, keeps
+ * its original images.
  *
  * @internal
  */
@@ -28,7 +30,9 @@ final class ShareImageUrlsDelegator
     public function __invoke(ContainerInterface $container, string $name, callable $callback): ImageUrlResolverInterface
     {
         $inner   = $callback();
-        $variant = ShareVariant::of($container);
+        $variant = Services::get($container, SeoConfig::class, SeoConfig::class)->records
+            ? ShareVariant::of($container)
+            : null;
 
         return null === $variant
             ? $inner

@@ -22,7 +22,10 @@ use function is_object;
  * admin.xml, read from the resource's own columns and the records it links to,
  * with the record's own overrides from its advanced column, which win over the
  * page's. A resource whose type no block maps, or that isn't a resource entity,
- * has none. A link whose relation the entity doesn't have gives no value.
+ * has none. A link whose relation the entity doesn't have gives no value. With the
+ * records switch off, only the title, the description and the share image as the site stores it
+ * are given, from the block's columns and the record's own advanced column; the image's
+ * alt text, canonical address, robots and schema stay out.
  */
 final readonly class SectionPageDefaults implements PageDefaultsInterface
 {
@@ -32,7 +35,21 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
     public function __construct(
         private SectionMap $map,
         private Closure $row,
+        private bool $records = true,
     ) {}
+
+    /**
+     * Only the title, description and plain share image of $defaults, and the record's own overrides of the first two.
+     */
+    private static function headline(PageDefaults $defaults): PageDefaults
+    {
+        return new PageDefaults(
+            title: $defaults->title,
+            description: $defaults->description,
+            image: $defaults->image,
+            overrides: new PageOverrides($defaults->overrides->title, $defaults->overrides->description),
+        );
+    }
 
     #[Override]
     public function for(MetadataInterface $resource): ?PageDefaults
@@ -42,9 +59,8 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
             return null;
         }
 
-        $page = $block->page([...($this->row)($resource), ...$this->linked($resource, $block->linked())]);
-
-        return new PageDefaults(
+        $page     = $block->page([...($this->row)($resource), ...$this->linked($resource, $block->linked())]);
+        $defaults = new PageDefaults(
             title: $page->title,
             description: $page->description,
             image: $page->image,
@@ -59,6 +75,8 @@ final readonly class SectionPageDefaults implements PageDefaultsInterface
                 $page->overrides->imageAlt,
             ),
         );
+
+        return $this->records ? $defaults : self::headline($defaults);
     }
 
     /**

@@ -15,6 +15,8 @@ use Contenir\Seo\Mezzio\Share\ShareableImage;
 use Contenir\Seo\Mezzio\Share\ShareImageSizes;
 use Contenir\Seo\Mezzio\Share\ShareImageUrls;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ArrayContainer;
+use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
+use Contenir\Seo\SeoConfig;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -183,9 +185,14 @@ final class ShareImagesTest extends TestCase
     /**
      * @param array<string, mixed> $profiles
      */
-    private function container(array $profiles, string $name = 'share', ?string $root = null): ArrayContainer
-    {
+    private function container(
+        array $profiles,
+        string $name = 'share',
+        ?string $root = null,
+        ?SeoConfig $seo = null,
+    ): ArrayContainer {
         return new ArrayContainer([
+            SeoConfig::class              => $seo ?? SeoSettings::config(),
             'config'                      => [
                 'contenir_seo'      => ['share_variant' => $name],
                 'contenir_resource' => null === $root ? [] : ['image_root' => $root],

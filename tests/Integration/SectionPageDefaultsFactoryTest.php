@@ -10,6 +10,8 @@ use Contenir\Seo\Mezzio\ConfigProvider;
 use Contenir\Seo\Mezzio\Factory\SectionPageDefaultsFactory;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ArrayContainer;
 use Contenir\Seo\Mezzio\Tests\TestAsset\ProjectEntity;
+use Contenir\Seo\Mezzio\Tests\TestAsset\SeoSettings;
+use Contenir\Seo\SeoConfig;
 use PhpDb\Adapter\AdapterInterface;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -44,6 +46,28 @@ final class SectionPageDefaultsFactoryTest extends TestCase
 
         static::assertNull(
             (new SectionPageDefaultsFactory())($this->container("{$this->file}.missing"))->for($resource),
+        );
+    }
+
+    #[Test]
+    public function givesOnlyATitleAndDescriptionWhileTheRecordsSwitchIsOff(): void
+    {
+        file_put_contents($this->file, <<<'XML'
+            <admin><library><category><projects><section><article><extensions>
+                <seo type="project" schema="CreativeWork"><advanced>seo</advanced></seo>
+            </extensions></article></section></projects></category></library></admin>
+            XML);
+        $resource                 = new ProjectEntity();
+        $resource->resourceTypeId = 'project';
+        $resource->seo            = '{"title": "Own title", "description": "Own description", "robots": "noindex"}';
+
+        $defaults = (new SectionPageDefaultsFactory())($this->container($this->file, settings: [
+            'extensions' => ['seo' => ['records' => '0']],
+        ]))->for($resource);
+
+        static::assertSame(
+            ['Own title', 'Own description', null, null],
+            [$defaults?->overrides->title, $defaults?->overrides->description, $defaults?->robots, $defaults?->schema],
         );
     }
 
@@ -99,10 +123,14 @@ final class SectionPageDefaultsFactoryTest extends TestCase
         unlink($this->file);
     }
 
-    private function container(string $adminXml, string|false $cache = false): ArrayContainer
+    /**
+     * @param array<array-key, mixed> $settings
+     */
+    private function container(string $adminXml, string|false $cache = false, array $settings = []): ArrayContainer
     {
         return new ArrayContainer([
             'config'             => ['contenir_seo' => ['admin_xml' => $adminXml, 'section_map_cache' => $cache]],
+            SeoConfig::class     => SeoSettings::config($settings),
             EntityManager::class => new EntityManager($this->createStub(AdapterInterface::class)),
         ]);
     }

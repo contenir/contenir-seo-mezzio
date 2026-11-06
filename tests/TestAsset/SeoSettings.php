@@ -30,7 +30,7 @@ final class SeoSettings
     {
         return array_replace_recursive([
             'site'       => ['url' => 'https://www.example.test', 'title' => 'Example'],
-            'extensions' => ['seo' => ['visibility' => 'show']],
+            'extensions' => ['seo' => ['visibility' => 'show', 'records' => '1']],
         ], $overrides);
     }
 }

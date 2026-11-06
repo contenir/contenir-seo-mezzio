@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.11.0] - 2026-11-06
+
+### Added
+
+- The master switch for what a site's `<seo>` blocks drive, `SeoConfig::$records`, read from `extensions.seo.records`
+  and, where the settings don't have it, from `contenir_seo.records`. It is off unless a site turns it on. While off,
+  `PageDefaultsInterface` still gives a record's title and description (from the block's columns and the record's own
+  advanced column), since where they come from is not gated, and the share image as the site stores it (the block's
+  `<image>` sources, as the site's entity chose it before the block did), as the original file: no 1200 by 630 share
+  variant, size claim or alt text. It gives no canonical address, robots or schema (so no block-driven schema), nor
+  overrides of them; the breadcrumb trail is named from its path, and the sitemap
+  lists no share images.
+
+### Changed
+
+- Requires `contenir/contenir-seo` ^0.8.
+
 ## [0.10.1] - 2026-11-05
 
 ### Added

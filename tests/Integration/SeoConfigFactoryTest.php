@@ -9,6 +9,7 @@ use Contenir\Seo\Mezzio\Tests\TestAsset\ArrayContainer;
 use Contenir\Seo\Mezzio\Tests\Trait\TempDirectoryTrait;
 use Contenir\Seo\Visibility\Visibility;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -25,6 +26,19 @@ use function pack;
 final class SeoConfigFactoryTest extends TestCase
 {
     use TempDirectoryTrait;
+
+    /**
+     * @return array<string, array{array<string, mixed>, array<string, mixed>, bool}>
+     */
+    public static function recordsProvider(): array
+    {
+        return [
+            'off by default'                   => [[], [], false],
+            'on in the settings'               => [[], ['records' => '1'], true],
+            'on in the config'                 => [['records' => true], [], true],
+            'the settings win over the config' => [['records' => true], ['records' => '0'], false],
+        ];
+    }
 
     #[Test]
     public function measuresTheShareImageInThePublicDirectory(): void
@@ -105,6 +119,35 @@ final class SeoConfigFactoryTest extends TestCase
             $config->sitemap->enabled,
             $config->visibility,
         ]);
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     * @param array<string, mixed> $stored
+     */
+    #[Test]
+    #[DataProvider('recordsProvider')]
+    public function readsTheRecordsSwitchFromTheSettingsThenTheConfig(
+        array $options,
+        array $stored,
+        bool $expected,
+    ): void {
+        $this->writeConfig('extensions.global.php', ['extensions' => ['enabled' => ['seo']]]);
+        $config                                  = $this->config();
+        $config['contenir_seo']                  += $options;
+        $config['settings']['extensions']['seo'] += $stored;
+
+        static::assertSame($expected, (new SeoConfigFactory())(new ArrayContainer(['config' => $config]))->records);
+    }
+
+    #[Test]
+    public function takesTheRecordsSwitchFromTheConfigWithoutTheAddOn(): void
+    {
+        $this->writeConfig('extensions.global.php', ['extensions' => ['enabled' => ['tracking']]]);
+        $config                            = $this->config();
+        $config['contenir_seo']['records'] = true;
+
+        static::assertTrue((new SeoConfigFactory())(new ArrayContainer(['config' => $config]))->records);
     }
 
     #[Override]
