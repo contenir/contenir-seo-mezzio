@@ -6,6 +6,17 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-20
+
+### Added
+
+- A page's author has their own page and profiles, from its `PageMetadata` (`withAuthor($name, $url, $profiles)`), as
+  their `url` and `sameAs`.
+
+### Changed
+
+- Requires `contenir/contenir-resource` ^2.0.0-RC11 and `contenir/contenir-seo` ^0.11.
+
 ## [0.13.0] - 2026-11-20
 
 ### Added
