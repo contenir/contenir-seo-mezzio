@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.13.0] - 2026-11-20
+
+### Added
+
+- A page's main JSON-LD node is by its author, a `Person`, when its `PageMetadata` names one (`withAuthor()`).
+
+### Changed
+
+- Requires `contenir/contenir-resource` ^2.0.0-RC10 and `contenir/contenir-seo` ^0.10.
+
 ## [0.12.0] - 2026-11-06
 
 ### Added

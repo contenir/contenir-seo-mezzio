@@ -51,7 +51,8 @@ final readonly class SeoHead
     /**
      * The page's main JSON-LD node from its metadata: of the schema type the
      * site's section map gives it, or an Article when its og:type is article,
-     * and none when it has neither or no title.
+     * and none when it has neither or no title. It is by the page's author,
+     * when the page names one.
      */
     public static function mainNode(PageMetadata $page): ?Article
     {
@@ -68,6 +69,7 @@ final readonly class SeoHead
             $page->published,
             $page->updated,
             $type,
+            $page->author,
         );
     }
 
