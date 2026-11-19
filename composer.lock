@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1fb66a0d9d4cb3e1a01a166caae12c0c",
+    "content-hash": "dc88a94906f38443adf314eb0ce2034a",
     "packages": [
         {
             "name": "contenir/contenir-asset",
@@ -435,16 +435,16 @@
         },
         {
             "name": "contenir/contenir-resource",
-            "version": "v2.0.0-RC10",
+            "version": "v2.0.0-RC11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-resource.git",
-                "reference": "a3243f59af567b81ce339c1b0ee4025d2ddfd46d"
+                "reference": "f715853eafe65320c09329763f7d3e4a25fc6635"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-resource/zipball/a3243f59af567b81ce339c1b0ee4025d2ddfd46d",
-                "reference": "a3243f59af567b81ce339c1b0ee4025d2ddfd46d",
+                "url": "https://api.github.com/repos/contenir/contenir-resource/zipball/f715853eafe65320c09329763f7d3e4a25fc6635",
+                "reference": "f715853eafe65320c09329763f7d3e4a25fc6635",
                 "shasum": ""
             },
             "require": {
@@ -496,20 +496,20 @@
                 "issues": "https://github.com/contenir/contenir-resource/issues",
                 "source": "https://github.com/contenir/contenir-resource"
             },
-            "time": "2026-11-19T21:21:54+00:00"
+            "time": "2026-11-19T21:55:15+00:00"
         },
         {
             "name": "contenir/contenir-seo",
-            "version": "v0.10.0",
+            "version": "v0.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-seo.git",
-                "reference": "ae902a26929d8cbb3f9ce875d38506136d52a84f"
+                "reference": "c1daaa3608bdd9a47716998421438c7d421a9fdc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/ae902a26929d8cbb3f9ce875d38506136d52a84f",
-                "reference": "ae902a26929d8cbb3f9ce875d38506136d52a84f",
+                "url": "https://api.github.com/repos/contenir/contenir-seo/zipball/c1daaa3608bdd9a47716998421438c7d421a9fdc",
+                "reference": "c1daaa3608bdd9a47716998421438c7d421a9fdc",
                 "shasum": ""
             },
             "require": {
@@ -588,7 +588,7 @@
                 "issues": "https://github.com/contenir/contenir-seo/issues",
                 "source": "https://github.com/contenir/contenir-seo"
             },
-            "time": "2026-11-19T21:22:38+00:00"
+            "time": "2026-11-19T21:55:31+00:00"
         },
         {
             "name": "contenir/contenir-site-token",
