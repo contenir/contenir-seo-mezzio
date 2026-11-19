@@ -75,6 +75,21 @@ final class SeoHeadTest extends TestCase
     }
 
     #[Test]
+    public function anArticleIsByThePagesAuthor(): void
+    {
+        static::assertSame(
+            'Jo Roca',
+            SeoHead::mainNode(new PageMetadata(
+                'https://www.example.test/words/power/jo-roca',
+                title: 'Jo Roca',
+                type: PageMetadata::ARTICLE,
+                author: 'Jo Roca',
+            ))
+                ?->author,
+        );
+    }
+
+    #[Test]
     public function anArticleIsDescribedAlongsideItsTrail(): void
     {
         $head = self::head('https://www.example.test/work/a-project')
